@@ -1,0 +1,2267 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>iO2 Launch Playbook — GTM Command Center</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300..700&family=Syne:wght@400..800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/lucide@0.378.0/dist/umd/lucide.min.js"></script>
+<style>
+:root {
+  --font-display: 'Syne', 'Arial Black', sans-serif;
+  --font-body: 'Space Grotesk', 'Helvetica Neue', sans-serif;
+  --text-xs: clamp(0.75rem, 0.7rem + 0.25vw, 0.875rem);
+  --text-sm: clamp(0.875rem, 0.8rem + 0.35vw, 1rem);
+  --text-base: clamp(1rem, 0.95rem + 0.25vw, 1.125rem);
+  --text-lg: clamp(1.125rem, 1rem + 0.75vw, 1.5rem);
+  --text-xl: clamp(1.5rem, 1.2rem + 1.25vw, 2.25rem);
+  --text-2xl: clamp(2rem, 1.2rem + 2.5vw, 3.5rem);
+  --text-3xl: clamp(2.5rem, 1rem + 4vw, 5rem);
+  --space-1: 0.25rem; --space-2: 0.5rem; --space-3: 0.75rem;
+  --space-4: 1rem; --space-5: 1.25rem; --space-6: 1.5rem;
+  --space-8: 2rem; --space-10: 2.5rem; --space-12: 3rem;
+  --space-16: 4rem; --space-20: 5rem; --space-24: 6rem;
+  --radius-sm: 0.375rem; --radius-md: 0.5rem;
+  --radius-lg: 0.75rem; --radius-xl: 1rem; --radius-2xl: 1.5rem;
+  --radius-full: 9999px;
+  --transition: 180ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+[data-theme="dark"] {
+  --color-bg: #080c12;
+  --color-surface: #0d1219;
+  --color-surface-2: #121922;
+  --color-surface-3: #18202c;
+  --color-border: rgba(255,255,255,0.08);
+  --color-border-bright: rgba(255,255,255,0.15);
+  --color-text: #e8edf5;
+  --color-text-muted: #8b96a8;
+  --color-text-faint: #4a5568;
+  --color-primary: #00c8e0;
+  --color-primary-dim: rgba(0,200,224,0.12);
+  --color-primary-glow: rgba(0,200,224,0.3);
+  --color-green: #00e5a0;
+  --color-green-dim: rgba(0,229,160,0.1);
+  --color-orange: #ff8c42;
+  --color-orange-dim: rgba(255,140,66,0.1);
+  --color-red: #ff4d6d;
+  --color-red-dim: rgba(255,77,109,0.1);
+  --color-gold: #ffd166;
+  --color-gold-dim: rgba(255,209,102,0.1);
+  --color-purple: #a78bfa;
+  --color-purple-dim: rgba(167,139,250,0.1);
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.4);
+  --shadow-md: 0 4px 16px rgba(0,0,0,0.5);
+  --shadow-lg: 0 12px 40px rgba(0,0,0,0.6);
+  --shadow-glow: 0 0 40px rgba(0,200,224,0.15);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; scroll-padding-top: 5rem; }
+body {
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  color: var(--color-text);
+  background: var(--color-bg);
+  min-height: 100dvh;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+img { display: block; max-width: 100%; }
+button { cursor: pointer; font: inherit; background: none; border: none; }
+ul { list-style: none; }
+a { color: inherit; text-decoration: none; }
+
+/* ===== SCROLLBAR ===== */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--color-bg); }
+::-webkit-scrollbar-thumb { background: var(--color-border-bright); border-radius: 3px; }
+
+/* ===== LAYOUT ===== */
+.app { display: flex; min-height: 100dvh; }
+
+/* ===== SIDEBAR ===== */
+.sidebar {
+  width: 260px;
+  flex-shrink: 0;
+  background: var(--color-surface);
+  border-right: 1px solid var(--color-border);
+  position: fixed;
+  top: 0; left: 0; bottom: 0;
+  overflow-y: auto;
+  z-index: 100;
+  transition: transform var(--transition);
+}
+
+.sidebar-logo {
+  padding: var(--space-6);
+  border-bottom: 1px solid var(--color-border);
+  display: flex; align-items: center; gap: var(--space-3);
+}
+.logo-mark {
+  width: 38px; height: 38px; flex-shrink: 0;
+  background: linear-gradient(135deg, #00c8e0, #0068ff);
+  border-radius: var(--radius-lg);
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-display); font-weight: 800;
+  font-size: 14px; color: #fff;
+  box-shadow: 0 0 20px rgba(0,200,224,0.4);
+}
+.logo-text { font-family: var(--font-display); font-weight: 700; font-size: var(--text-sm); line-height: 1.2; }
+.logo-text span { display: block; color: var(--color-text-muted); font-size: var(--text-xs); font-weight: 400; }
+
+.sidebar-section { padding: var(--space-4) var(--space-3); }
+.sidebar-section-label {
+  font-size: var(--text-xs); font-weight: 600; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--color-text-faint);
+  padding: 0 var(--space-3) var(--space-2);
+}
+.sidebar-link {
+  display: flex; align-items: center; gap: var(--space-3);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-md);
+  font-size: var(--text-sm); color: var(--color-text-muted);
+  transition: all var(--transition);
+  cursor: pointer;
+}
+.sidebar-link svg { width: 16px; height: 16px; flex-shrink: 0; stroke-width: 2; }
+.sidebar-link:hover { color: var(--color-text); background: var(--color-surface-2); }
+.sidebar-link.active {
+  color: var(--color-primary);
+  background: var(--color-primary-dim);
+}
+.sidebar-link .badge {
+  margin-left: auto; font-size: 10px; font-weight: 700;
+  background: var(--color-green-dim); color: var(--color-green);
+  border-radius: var(--radius-full); padding: 2px 8px;
+}
+.sidebar-link .badge-warn {
+  margin-left: auto; font-size: 10px; font-weight: 700;
+  background: var(--color-red-dim); color: var(--color-red);
+  border-radius: var(--radius-full); padding: 2px 8px;
+}
+
+/* ===== MAIN ===== */
+.main-content {
+  margin-left: 260px;
+  flex: 1;
+  min-width: 0;
+}
+
+/* ===== TOPBAR ===== */
+.topbar {
+  position: sticky; top: 0; z-index: 50;
+  background: rgba(8,12,18,0.9);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--color-border);
+  padding: var(--space-4) var(--space-8);
+  display: flex; align-items: center; justify-content: space-between;
+}
+.topbar-title { font-family: var(--font-display); font-weight: 700; font-size: var(--text-lg); }
+.topbar-actions { display: flex; gap: var(--space-3); align-items: center; }
+.status-pill {
+  display: flex; align-items: center; gap: var(--space-2);
+  background: var(--color-green-dim); border: 1px solid rgba(0,229,160,0.2);
+  color: var(--color-green); border-radius: var(--radius-full);
+  padding: var(--space-1) var(--space-3); font-size: var(--text-xs); font-weight: 600;
+}
+.status-dot { width: 6px; height: 6px; background: var(--color-green); border-radius: 50%; animation: pulse-dot 2s ease-in-out infinite; }
+@keyframes pulse-dot { 0%,100%{opacity:1;transform:scale(1);} 50%{opacity:0.5;transform:scale(0.8);} }
+
+/* ===== SECTIONS ===== */
+.section {
+  display: none; padding: var(--space-8);
+  animation: fadeIn 0.3s ease;
+}
+.section.active { display: block; }
+@keyframes fadeIn { from{opacity:0;transform:translateY(8px);} to{opacity:1;transform:none;} }
+
+.section-header { margin-bottom: var(--space-8); }
+.section-header h1 {
+  font-family: var(--font-display); font-weight: 800;
+  font-size: var(--text-2xl); line-height: 1.1;
+  background: linear-gradient(135deg, var(--color-primary), #0068ff);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.section-header p { color: var(--color-text-muted); font-size: var(--text-base); margin-top: var(--space-2); max-width: 65ch; }
+
+/* ===== CARDS ===== */
+.card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  padding: var(--space-6);
+  transition: box-shadow var(--transition), border-color var(--transition);
+}
+.card:hover { box-shadow: var(--shadow-md); border-color: var(--color-border-bright); }
+.card-title {
+  font-family: var(--font-display); font-weight: 700;
+  font-size: var(--text-base); margin-bottom: var(--space-4);
+  color: var(--color-text);
+}
+.card-subtitle {
+  font-size: var(--text-xs); font-weight: 600;
+  text-transform: uppercase; letter-spacing: 0.08em;
+  color: var(--color-text-faint); margin-bottom: var(--space-2);
+}
+
+/* ===== GRID ===== */
+.grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--space-5); }
+.grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-5); }
+.grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--space-5); }
+.grid-auto { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px,1fr)); gap: var(--space-5); }
+
+/* ===== KPI CARDS ===== */
+.kpi-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px,1fr)); gap: var(--space-4); margin-bottom: var(--space-6); }
+.kpi-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl); padding: var(--space-5);
+  position: relative; overflow: hidden;
+  transition: all var(--transition);
+}
+.kpi-card::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+}
+.kpi-card.primary::before { background: linear-gradient(90deg, var(--color-primary), #0068ff); }
+.kpi-card.green::before { background: linear-gradient(90deg, var(--color-green), #00a870); }
+.kpi-card.orange::before { background: linear-gradient(90deg, var(--color-orange), #ff6b00); }
+.kpi-card.gold::before { background: linear-gradient(90deg, var(--color-gold), #ff9500); }
+.kpi-card.red::before { background: linear-gradient(90deg, var(--color-red), #c2185b); }
+.kpi-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+.kpi-label { font-size: var(--text-xs); font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--color-text-muted); margin-bottom: var(--space-2); }
+.kpi-value { font-family: var(--font-display); font-weight: 800; font-size: var(--text-xl); color: var(--color-text); font-variant-numeric: tabular-nums; }
+.kpi-subtext { font-size: var(--text-xs); color: var(--color-text-faint); margin-top: var(--space-1); }
+.kpi-change { font-size: var(--text-xs); font-weight: 600; margin-top: var(--space-2); display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: var(--radius-full); }
+.kpi-change.up { background: var(--color-green-dim); color: var(--color-green); }
+.kpi-change.down { background: var(--color-red-dim); color: var(--color-red); }
+
+/* ===== COMPETITIVE MATRIX ===== */
+.matrix-wrapper { overflow-x: auto; }
+.matrix-table { width: 100%; border-collapse: collapse; font-size: var(--text-sm); font-variant-numeric: tabular-nums; }
+.matrix-table th {
+  padding: var(--space-3) var(--space-4);
+  text-align: left; font-size: var(--text-xs); font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.06em;
+  color: var(--color-text-muted); white-space: nowrap;
+  border-bottom: 1px solid var(--color-border);
+}
+.matrix-table td {
+  padding: var(--space-3) var(--space-4);
+  border-bottom: 1px solid var(--color-border);
+  vertical-align: middle;
+}
+.matrix-table tr:last-child td { border-bottom: none; }
+.matrix-table tbody tr:hover { background: var(--color-surface-2); }
+.matrix-table .highlight-row { background: var(--color-primary-dim); }
+.matrix-table .highlight-row:hover { background: rgba(0,200,224,0.15); }
+.brand-name { font-weight: 700; color: var(--color-text); }
+.brand-io2 { color: var(--color-primary); }
+.score-bar { display: flex; align-items: center; gap: var(--space-2); }
+.score-bar-fill { height: 6px; border-radius: 3px; background: var(--color-border); flex: 1; overflow: hidden; }
+.score-bar-fill-inner { height: 100%; border-radius: 3px; }
+.score-text { font-size: var(--text-xs); font-weight: 700; width: 28px; text-align: right; }
+.tag { display: inline-block; font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: var(--radius-full); }
+.tag-green { background: var(--color-green-dim); color: var(--color-green); border: 1px solid rgba(0,229,160,0.2); }
+.tag-red { background: var(--color-red-dim); color: var(--color-red); border: 1px solid rgba(255,77,109,0.2); }
+.tag-orange { background: var(--color-orange-dim); color: var(--color-orange); border: 1px solid rgba(255,140,66,0.2); }
+.tag-blue { background: var(--color-primary-dim); color: var(--color-primary); border: 1px solid rgba(0,200,224,0.2); }
+.tag-gold { background: var(--color-gold-dim); color: var(--color-gold); border: 1px solid rgba(255,209,102,0.2); }
+
+/* ===== GTM CHANNEL CARDS ===== */
+.channel-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  padding: var(--space-6);
+  transition: all var(--transition);
+  position: relative; overflow: hidden;
+}
+.channel-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg); border-color: var(--color-border-bright); }
+.channel-verdict {
+  position: absolute; top: var(--space-4); right: var(--space-4);
+  font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em;
+  padding: 3px 10px; border-radius: var(--radius-full);
+}
+.verdict-go { background: var(--color-green-dim); color: var(--color-green); border: 1px solid rgba(0,229,160,0.3); }
+.verdict-test { background: var(--color-gold-dim); color: var(--color-gold); border: 1px solid rgba(255,209,102,0.3); }
+.verdict-avoid { background: var(--color-red-dim); color: var(--color-red); border: 1px solid rgba(255,77,109,0.3); }
+.channel-icon { width: 44px; height: 44px; border-radius: var(--radius-lg); display: flex; align-items: center; justify-content: center; margin-bottom: var(--space-4); }
+.channel-icon svg { width: 22px; height: 22px; }
+.channel-name { font-family: var(--font-display); font-weight: 700; font-size: var(--text-base); margin-bottom: var(--space-2); }
+.channel-desc { font-size: var(--text-sm); color: var(--color-text-muted); line-height: 1.6; margin-bottom: var(--space-4); }
+.channel-metrics { display: flex; gap: var(--space-4); flex-wrap: wrap; }
+.channel-metric { }
+.channel-metric-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--color-text-faint); font-weight: 600; }
+.channel-metric-value { font-size: var(--text-sm); font-weight: 700; color: var(--color-text); }
+
+/* ===== TIMELINE / ROADMAP ===== */
+.timeline { position: relative; padding-left: var(--space-10); }
+.timeline::before {
+  content: ''; position: absolute; left: 16px; top: 8px; bottom: 8px; width: 2px;
+  background: linear-gradient(to bottom, var(--color-primary), transparent);
+}
+.timeline-item { position: relative; margin-bottom: var(--space-8); }
+.timeline-dot {
+  position: absolute; left: -34px; top: 4px;
+  width: 14px; height: 14px; border-radius: 50%;
+  background: var(--color-primary); box-shadow: 0 0 12px var(--color-primary-glow);
+  border: 2px solid var(--color-bg);
+}
+.timeline-dot.milestone { background: var(--color-gold); box-shadow: 0 0 12px rgba(255,209,102,0.5); }
+.timeline-phase { font-size: var(--text-xs); font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--color-primary); margin-bottom: var(--space-1); }
+.timeline-title { font-family: var(--font-display); font-weight: 700; font-size: var(--text-lg); margin-bottom: var(--space-3); }
+.timeline-items { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+.timeline-tag {
+  background: var(--color-surface-2); border: 1px solid var(--color-border);
+  color: var(--color-text-muted); border-radius: var(--radius-md);
+  padding: var(--space-2) var(--space-3); font-size: var(--text-xs);
+}
+
+/* ===== CHART CONTAINER ===== */
+.chart-container {
+  position: relative; width: 100%;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  padding: var(--space-6);
+  overflow: hidden;
+}
+.chart-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: var(--space-6); }
+.chart-title { font-family: var(--font-display); font-weight: 700; font-size: var(--text-base); }
+.chart-subtitle { font-size: var(--text-xs); color: var(--color-text-muted); margin-top: var(--space-1); }
+.chart-canvas-wrap { position: relative; height: 260px; }
+
+/* ===== HERO SECTION ===== */
+.hero {
+  min-height: 90vh; display: flex; flex-direction: column; justify-content: center;
+  padding: var(--space-16) var(--space-8);
+  position: relative; overflow: hidden;
+}
+.hero-bg {
+  position: absolute; inset: 0; pointer-events: none; z-index: 0;
+  background: radial-gradient(ellipse 70% 50% at 60% 40%, rgba(0,200,224,0.07) 0%, transparent 70%),
+              radial-gradient(ellipse 40% 60% at 20% 80%, rgba(0,104,255,0.05) 0%, transparent 60%);
+}
+.hero-grid-overlay {
+  position: absolute; inset: 0; pointer-events: none; z-index: 0;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+  background-size: 60px 60px;
+  -webkit-mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 0%, transparent 100%);
+  mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 0%, transparent 100%);
+}
+.hero-content { position: relative; z-index: 1; max-width: 800px; }
+.hero-eyebrow {
+  display: inline-flex; align-items: center; gap: var(--space-2);
+  background: var(--color-primary-dim); border: 1px solid rgba(0,200,224,0.2);
+  color: var(--color-primary); border-radius: var(--radius-full);
+  padding: var(--space-2) var(--space-4); font-size: var(--text-xs);
+  font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em;
+  margin-bottom: var(--space-6);
+}
+.hero-title {
+  font-family: var(--font-display); font-weight: 800;
+  font-size: var(--text-3xl); line-height: 1.05; margin-bottom: var(--space-6);
+  letter-spacing: -0.02em;
+}
+.hero-title .highlight {
+  background: linear-gradient(135deg, var(--color-primary), #0068ff);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.hero-subtitle { font-size: var(--text-lg); color: var(--color-text-muted); line-height: 1.6; max-width: 60ch; margin-bottom: var(--space-10); }
+.hero-stats { display: flex; gap: var(--space-10); flex-wrap: wrap; }
+.hero-stat-value { font-family: var(--font-display); font-weight: 800; font-size: var(--text-2xl); color: var(--color-text); }
+.hero-stat-label { font-size: var(--text-xs); color: var(--color-text-muted); text-transform: uppercase; letter-spacing: 0.06em; margin-top: var(--space-1); }
+
+/* ===== INFOMERCIAL SECTION ===== */
+.verdict-card {
+  border-radius: var(--radius-xl); padding: var(--space-8);
+  border: 1px solid;
+}
+.verdict-yes { background: var(--color-green-dim); border-color: rgba(0,229,160,0.25); }
+.verdict-maybe { background: var(--color-gold-dim); border-color: rgba(255,209,102,0.25); }
+.verdict-no { background: var(--color-red-dim); border-color: rgba(255,77,109,0.25); }
+.verdict-title { font-family: var(--font-display); font-weight: 800; font-size: var(--text-xl); margin-bottom: var(--space-3); }
+.verdict-yes .verdict-title { color: var(--color-green); }
+.verdict-maybe .verdict-title { color: var(--color-gold); }
+.verdict-no .verdict-title { color: var(--color-red); }
+
+/* ===== PROGRESS BAR ===== */
+.progress-row { display: flex; align-items: center; gap: var(--space-4); margin-bottom: var(--space-4); }
+.progress-label { font-size: var(--text-sm); color: var(--color-text-muted); min-width: 140px; }
+.progress-track { flex: 1; height: 8px; background: var(--color-surface-3); border-radius: 4px; overflow: hidden; }
+.progress-fill { height: 100%; border-radius: 4px; transition: width 1.2s cubic-bezier(0.16,1,0.3,1); }
+.progress-pct { font-size: var(--text-xs); font-weight: 700; color: var(--color-text); min-width: 36px; text-align: right; }
+
+/* ===== PERSONA CARDS ===== */
+.persona-card {
+  background: var(--color-surface); border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl); padding: var(--space-6);
+  transition: all var(--transition);
+}
+.persona-card:hover { border-color: var(--color-border-bright); box-shadow: var(--shadow-md); }
+.persona-avatar {
+  width: 56px; height: 56px; border-radius: var(--radius-full);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 24px; margin-bottom: var(--space-4);
+  background: var(--color-surface-2);
+}
+.persona-name { font-family: var(--font-display); font-weight: 700; font-size: var(--text-base); margin-bottom: var(--space-1); }
+.persona-role { font-size: var(--text-xs); color: var(--color-text-muted); margin-bottom: var(--space-4); }
+.persona-stat { display: flex; justify-content: space-between; padding: var(--space-2) 0; border-top: 1px solid var(--color-border); font-size: var(--text-sm); }
+.persona-stat-key { color: var(--color-text-muted); }
+.persona-stat-val { font-weight: 700; color: var(--color-text); }
+
+/* ===== TABS ===== */
+.tabs { display: flex; gap: var(--space-2); margin-bottom: var(--space-6); border-bottom: 1px solid var(--color-border); }
+.tab-btn {
+  padding: var(--space-3) var(--space-4); font-size: var(--text-sm); font-weight: 600;
+  color: var(--color-text-muted); border-bottom: 2px solid transparent;
+  transition: all var(--transition); background: none; border-top: none; border-left: none; border-right: none;
+  cursor: pointer; font-family: var(--font-body);
+}
+.tab-btn:hover { color: var(--color-text); }
+.tab-btn.active { color: var(--color-primary); border-bottom-color: var(--color-primary); }
+.tab-panel { display: none; }
+.tab-panel.active { display: block; animation: fadeIn 0.25s ease; }
+
+/* ===== CHECKLIST ===== */
+.checklist { display: flex; flex-direction: column; gap: var(--space-3); }
+.checklist-item { display: flex; gap: var(--space-3); align-items: flex-start; }
+.checklist-icon { flex-shrink: 0; width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-top: 2px; }
+.check-go { background: var(--color-green-dim); color: var(--color-green); }
+.check-test { background: var(--color-gold-dim); color: var(--color-gold); }
+.check-avoid { background: var(--color-red-dim); color: var(--color-red); }
+.checklist-icon svg { width: 12px; height: 12px; }
+.checklist-text strong { display: block; font-size: var(--text-sm); font-weight: 700; margin-bottom: 2px; }
+.checklist-text span { font-size: var(--text-xs); color: var(--color-text-muted); }
+
+/* ===== SWOT ===== */
+.swot-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--color-border); border-radius: var(--radius-xl); overflow: hidden; }
+.swot-quadrant { padding: var(--space-6); background: var(--color-surface); }
+.swot-label { font-size: var(--text-xs); font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: var(--space-4); }
+.swot-s .swot-label { color: var(--color-green); }
+.swot-w .swot-label { color: var(--color-red); }
+.swot-o .swot-label { color: var(--color-primary); }
+.swot-t .swot-label { color: var(--color-orange); }
+.swot-list { display: flex; flex-direction: column; gap: var(--space-2); }
+.swot-list li { font-size: var(--text-sm); color: var(--color-text-muted); padding-left: var(--space-4); position: relative; }
+.swot-list li::before { content: '—'; position: absolute; left: 0; color: var(--color-text-faint); }
+
+/* ===== MOBILE SIDEBAR TOGGLE ===== */
+.mobile-toggle {
+  display: none; position: fixed; bottom: var(--space-6); right: var(--space-6);
+  z-index: 200; width: 52px; height: 52px; border-radius: 50%;
+  background: var(--color-primary); color: #000; box-shadow: var(--shadow-lg);
+  align-items: center; justify-content: center;
+}
+.sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 99; }
+
+@media (max-width: 900px) {
+  .sidebar { transform: translateX(-100%); }
+  .sidebar.open { transform: translateX(0); }
+  .main-content { margin-left: 0; }
+  .mobile-toggle { display: flex; }
+  .sidebar-overlay.active { display: block; }
+  .section { padding: var(--space-6) var(--space-4); }
+  .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+  .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+  .swot-grid { grid-template-columns: 1fr; }
+  .hero { padding: var(--space-10) var(--space-4); min-height: 100svh; }
+}
+
+/* ===== FINANCIAL PROJECTIONS TABLE ===== */
+.fin-table { width: 100%; border-collapse: collapse; }
+.fin-table th, .fin-table td { padding: var(--space-3) var(--space-4); text-align: right; border-bottom: 1px solid var(--color-border); font-size: var(--text-sm); font-variant-numeric: tabular-nums; }
+.fin-table th:first-child, .fin-table td:first-child { text-align: left; }
+.fin-table th { font-size: var(--text-xs); text-transform: uppercase; letter-spacing: 0.06em; color: var(--color-text-muted); font-weight: 600; }
+.fin-table .total-row td { font-weight: 700; color: var(--color-primary); border-top: 2px solid var(--color-border); }
+.fin-table tbody tr:hover { background: var(--color-surface-2); }
+
+/* ===== SCROLLABLE AREA ===== */
+.scroll-area { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+
+/* ===== NUMBER COUNTER ANIMATION ===== */
+.counter { font-variant-numeric: tabular-nums; }
+</style>
+</head>
+<body>
+
+<div class="app">
+
+<!-- SIDEBAR -->
+<nav class="sidebar" id="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-mark">iO2</div>
+    <div class="logo-text">
+      Launch Playbook
+      <span>GTM Command Center</span>
+    </div>
+  </div>
+
+  <div class="sidebar-section">
+    <div class="sidebar-section-label">Overview</div>
+    <a class="sidebar-link active" onclick="showSection('overview')">
+      <i data-lucide="layout-dashboard"></i> Mission Control
+    </a>
+    <a class="sidebar-link" onclick="showSection('market')">
+      <i data-lucide="trending-up"></i> Market Intelligence
+    </a>
+    <a class="sidebar-link" onclick="showSection('personas')">
+      <i data-lucide="users"></i> Target Personas
+    </a>
+  </div>
+
+  <div class="sidebar-section">
+    <div class="sidebar-section-label">Competitive</div>
+    <a class="sidebar-link" onclick="showSection('competitors')">
+      <i data-lucide="crosshair"></i> Competitor Matrix
+    </a>
+    <a class="sidebar-link" onclick="showSection('swot')">
+      <i data-lucide="shield"></i> SWOT Analysis
+    </a>
+    <a class="sidebar-link" onclick="showSection('positioning')">
+      <i data-lucide="target"></i> Brand Positioning
+    </a>
+  </div>
+
+  <div class="sidebar-section">
+    <div class="sidebar-section-label">Go-To-Market</div>
+    <a class="sidebar-link" onclick="showSection('channels')">
+      <i data-lucide="radio"></i> Channel Playbook
+      <span class="badge">12 Channels</span>
+    </a>
+    <a class="sidebar-link" onclick="showSection('infomercial')">
+      <i data-lucide="tv"></i> Infomercial/DRTV
+    </a>
+    <a class="sidebar-link" onclick="showSection('digital')">
+      <i data-lucide="smartphone"></i> Digital & Social
+    </a>
+    <a class="sidebar-link" onclick="showSection('partnerships')">
+      <i data-lucide="handshake"></i> Partnerships & B2B
+    </a>
+  </div>
+
+  <div class="sidebar-section">
+    <div class="sidebar-section-label">Strategy</div>
+    <a class="sidebar-link" onclick="showSection('roadmap')">
+      <i data-lucide="map"></i> Launch Roadmap
+    </a>
+    <a class="sidebar-link" onclick="showSection('financials')">
+      <i data-lucide="bar-chart-2"></i> Financial Model
+    </a>
+    <a class="sidebar-link" onclick="showSection('verdict')">
+      <i data-lucide="check-circle"></i> The Verdict
+      <span class="badge">Must Read</span>
+    </a>
+  </div>
+</nav>
+
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+
+<!-- MAIN CONTENT -->
+<main class="main-content">
+
+  <!-- TOPBAR -->
+  <header class="topbar">
+    <div class="topbar-title" id="topbarTitle">Mission Control</div>
+    <div class="topbar-actions">
+      <div class="status-pill">
+        <div class="status-dot"></div>
+        Launch Ready — 2026
+      </div>
+    </div>
+  </header>
+
+  <!-- ======================= OVERVIEW ======================= -->
+  <section class="section active" id="section-overview">
+    <div class="hero">
+      <div class="hero-bg"></div>
+      <div class="hero-grid-overlay"></div>
+      <div class="hero-content">
+        <div class="hero-eyebrow">
+          <i data-lucide="zap" style="width:12px;height:12px;"></i>
+          iO2 Water · GTM Superbowl Playbook
+        </div>
+        <h1 class="hero-title">
+          The <span class="highlight">Oxygen Edge</span><br>
+          Launch Playbook
+        </h1>
+        <p class="hero-subtitle">
+          A comprehensive go-to-market bible for iO2 — covering competitive intelligence, 
+          channel strategy, persona targeting, financial modeling, and every revenue lever 
+          you should activate, test, or stay away from.
+        </p>
+        <div class="hero-stats">
+          <div>
+            <div class="hero-stat-value counter" data-target="8.79">$8.79B</div>
+            <div class="hero-stat-label">Enhanced Water Market 2024</div>
+          </div>
+          <div>
+            <div class="hero-stat-value">9.2%</div>
+            <div class="hero-stat-label">CAGR Through 2030</div>
+          </div>
+          <div>
+            <div class="hero-stat-value">$120M</div>
+            <div class="hero-stat-label">Y5 Revenue Target</div>
+          </div>
+          <div>
+            <div class="hero-stat-value">70%+</div>
+            <div class="hero-stat-label">Target Gross Margin</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick KPIs -->
+    <div style="padding: 0 var(--space-8) var(--space-8);">
+      <div class="kpi-grid">
+        <div class="kpi-card primary">
+          <div class="kpi-label">Functional Water TAM</div>
+          <div class="kpi-value">$10.7B</div>
+          <div class="kpi-subtext">by 2030 at 8.72% CAGR</div>
+          <div class="kpi-change up">↑ 8.72% CAGR</div>
+        </div>
+        <div class="kpi-card green">
+          <div class="kpi-label">Year 1 Revenue Target</div>
+          <div class="kpi-value">$2M</div>
+          <div class="kpi-subtext">DTC + fitness/wellness channel</div>
+          <div class="kpi-change up">↑ Launch 2026</div>
+        </div>
+        <div class="kpi-card orange">
+          <div class="kpi-label">Dissolved Oxygen Level</div>
+          <div class="kpi-value">60 mg/L</div>
+          <div class="kpi-subtext">vs ~8–12 mg/L standard water</div>
+          <div class="kpi-change up">↑ 5-7x above standard</div>
+        </div>
+        <div class="kpi-card gold">
+          <div class="kpi-label">Seed Round Target</div>
+          <div class="kpi-value">$5M</div>
+          <div class="kpi-subtext">$100M pre-money valuation</div>
+          <div class="kpi-change up">10–25x return target</div>
+        </div>
+        <div class="kpi-card primary">
+          <div class="kpi-label">Gen Z/Millennial Preference</div>
+          <div class="kpi-value">60%</div>
+          <div class="kpi-subtext">prefer functional beverages</div>
+          <div class="kpi-change up">↑ Primary audience</div>
+        </div>
+        <div class="kpi-card green">
+          <div class="kpi-label">Competitors w/ Patent</div>
+          <div class="kpi-value">0</div>
+          <div class="kpi-subtext">No direct patent competitor</div>
+          <div class="kpi-change up">↑ Blue ocean moat</div>
+        </div>
+      </div>
+
+      <!-- OVERVIEW CHARTS -->
+      <div class="grid-2" style="margin-bottom: var(--space-6);">
+        <div class="chart-container">
+          <div class="chart-header">
+            <div>
+              <div class="chart-title">iO2 5-Year Revenue Forecast</div>
+              <div class="chart-subtitle">Projected revenue growth ($M)</div>
+            </div>
+          </div>
+          <div class="chart-canvas-wrap"><canvas id="revenueChart"></canvas></div>
+        </div>
+        <div class="chart-container">
+          <div class="chart-header">
+            <div>
+              <div class="chart-title">Market Opportunity Breakdown</div>
+              <div class="chart-subtitle">Addressable segments ($ Billions)</div>
+            </div>
+          </div>
+          <div class="chart-canvas-wrap"><canvas id="marketChart"></canvas></div>
+        </div>
+      </div>
+
+      <!-- GTM QUICK VERDICT -->
+      <div class="card">
+        <div class="card-title">⚡ Executive GTM Summary — The 30-Second Brief</div>
+        <div class="grid-3" style="gap: var(--space-4);">
+          <div style="padding: var(--space-4); background: var(--color-green-dim); border: 1px solid rgba(0,229,160,0.2); border-radius: var(--radius-lg);">
+            <div style="font-size: var(--text-xs); font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em; color: var(--color-green); margin-bottom: var(--space-3);">✅ DO THESE FIRST</div>
+            <ul style="display: flex; flex-direction: column; gap: var(--space-2);">
+              <li style="font-size: var(--text-sm); color: var(--color-text-muted);">→ TikTok/Instagram short-form video blitz</li>
+              <li style="font-size: var(--text-sm); color: var(--color-text-muted);">→ Biohacker influencer seeding (100+ micro)</li>
+              <li style="font-size: var(--text-sm); color: var(--color-text-muted);">→ CrossFit / MMA gym partnerships</li>
+              <li style="font-size: var(--text-sm); color: var(--color-text-muted);">→ DTC Shopify + subscription model</li>
+              <li style="font-size: var(--text-sm); color: var(--color-text-muted);">→ Amazon FBA listing launch</li>
+              <li style="font-size: var(--text-sm); color: var(--color-text-muted);">→ Recovery clinic / sports medicine B2B</li>
+            </ul>
+          </div>
+          <div style="padding: var(--space-4); background: var(--color-gold-dim); border: 1px solid rgba(255,209,102,0.2); border-radius: var(--radius-lg);">
+            <div style="font-size: var(--text-xs); font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em; color: var(--color-gold); margin-bottom: var(--space-3);">🧪 TEST & MEASURE</div>
+            <ul style="display: flex; flex-direction: column; gap: var(--space-2);">
+              <li style="font-size: var(--text-sm); color: var(--color-text-muted);">→ Short-form DRTV (2-min spots, not 30-min)</li>
+              <li style="font-size: var(--text-sm); color: var(--color-text-muted);">→ Podcast ads (Joe Rogan / health/fitness)</li>
+              <li style="font-size: var(--text-sm); color: var(--color-text-muted);">→ CTV/streaming pre-roll ads</li>
+              <li style="font-size: var(--text-sm); color: var(--color-text-muted);">→ NFL/UFC athlete NIL deals</li>
+              <li style="font-size: var(--text-sm); color: var(--color-text-muted);">→ Whole Foods / Sprouts pilot pitch</li>
+              <li style="font-size: var(--text-sm); color: var(--color-text-muted);">→ Hospital / clinical channel (Phase 2)</li>
+            </ul>
+          </div>
+          <div style="padding: var(--space-4); background: var(--color-red-dim); border: 1px solid rgba(255,77,109,0.2); border-radius: var(--radius-lg);">
+            <div style="font-size: var(--text-xs); font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em; color: var(--color-red); margin-bottom: var(--space-3);">🚫 AVOID NOW</div>
+            <ul style="display: flex; flex-direction: column; gap: var(--space-2);">
+              <li style="font-size: var(--text-sm); color: var(--color-text-muted);">→ Full 30-min infomercial (too expensive early)</li>
+              <li style="font-size: var(--text-sm); color: var(--color-text-muted);">→ Mass grocery retail (Walmart, Kroger) now</li>
+              <li style="font-size: var(--text-sm); color: var(--color-text-muted);">→ Print/magazine advertising</li>
+              <li style="font-size: var(--text-sm); color: var(--color-text-muted);">→ Broad national TV (no targeting)</li>
+              <li style="font-size: var(--text-sm); color: var(--color-text-muted);">→ Trade shows as primary channel</li>
+              <li style="font-size: var(--text-sm); color: var(--color-text-muted);">→ Celebrity equity deals pre-traction</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================= MARKET ======================= -->
+  <section class="section" id="section-market">
+    <div class="section-header">
+      <h1>Market Intelligence</h1>
+      <p>Data-driven view of the functional water market, trends driving growth, and where iO2 can own territory.</p>
+    </div>
+
+    <div class="kpi-grid">
+      <div class="kpi-card primary">
+        <div class="kpi-label">Enhanced Water Market '24</div>
+        <div class="kpi-value">$8.79B</div>
+        <div class="kpi-subtext">→ $14.87B by 2030</div>
+        <div class="kpi-change up">↑ 9.2% CAGR</div>
+      </div>
+      <div class="kpi-card green">
+        <div class="kpi-label">Functional Water Market '24</div>
+        <div class="kpi-value">$6.48B</div>
+        <div class="kpi-subtext">→ $10.7B by 2030</div>
+        <div class="kpi-change up">↑ 8.72% CAGR</div>
+      </div>
+      <div class="kpi-card orange">
+        <div class="kpi-label">Premium Bottled Water '30</div>
+        <div class="kpi-value">$56B</div>
+        <div class="kpi-subtext">CAGR of 7.5%</div>
+        <div class="kpi-change up">↑ Fastest sub-segment</div>
+      </div>
+      <div class="kpi-card gold">
+        <div class="kpi-label">Functional Beverages (Global)</div>
+        <div class="kpi-value">$150B+</div>
+        <div class="kpi-subtext">2-3x faster growth than soda</div>
+        <div class="kpi-change up">↑ Dominant macro trend</div>
+      </div>
+    </div>
+
+    <div class="grid-2" style="margin-bottom: var(--space-6);">
+      <div class="chart-container">
+        <div class="chart-header">
+          <div>
+            <div class="chart-title">Enhanced Water Market Growth</div>
+            <div class="chart-subtitle">$B — 2024 to 2030 projection</div>
+          </div>
+        </div>
+        <div class="chart-canvas-wrap"><canvas id="enhancedWaterChart"></canvas></div>
+      </div>
+      <div class="chart-container">
+        <div class="chart-header">
+          <div>
+            <div class="chart-title">Consumer Trend Drivers</div>
+            <div class="chart-subtitle">% of consumers citing as purchase driver</div>
+          </div>
+        </div>
+        <div class="chart-canvas-wrap"><canvas id="trendChart"></canvas></div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom: var(--space-6);">
+      <div class="card-title">🌊 The 4 Tailwinds Powering iO2</div>
+      <div class="grid-2">
+        <div style="padding: var(--space-4); background: var(--color-surface-2); border-radius: var(--radius-lg);">
+          <div style="font-weight: 700; font-size: var(--text-sm); color: var(--color-primary); margin-bottom: var(--space-2);">1. Clean Label Revolution</div>
+          <p style="font-size: var(--text-sm); color: var(--color-text-muted);">73% of consumers actively improving hydration habits. Shift away from caffeine-based energy drinks is accelerating. Zero-sugar, zero-additive products commanding 20–40% price premiums in retail.</p>
+        </div>
+        <div style="padding: var(--space-4); background: var(--color-surface-2); border-radius: var(--radius-lg);">
+          <div style="font-weight: 700; font-size: var(--text-sm); color: var(--color-green); margin-bottom: var(--space-2);">2. Biohacking Goes Mainstream</div>
+          <p style="font-size: var(--text-sm); color: var(--color-text-muted);">The biohacking market is projected to hit $100B+ by 2030. Oxygen supplementation, hyperbaric therapy ($3.98B market), and longevity-focused consumers create a primed audience for iO2's science story.</p>
+        </div>
+        <div style="padding: var(--space-4); background: var(--color-surface-2); border-radius: var(--radius-lg);">
+          <div style="font-weight: 700; font-size: var(--text-sm); color: var(--color-orange); margin-bottom: var(--space-2);">3. Canned Water Surging</div>
+          <p style="font-size: var(--text-sm); color: var(--color-text-muted);">Canned bottled water growing at 7.0% CAGR — fastest packaging format. Liquid Death proved canned water as a premium, desirable SKU. iO2's can format is perfectly timed to ride this wave.</p>
+        </div>
+        <div style="padding: var(--space-4); background: var(--color-surface-2); border-radius: var(--radius-lg);">
+          <div style="font-weight: 700; font-size: var(--text-sm); color: var(--color-gold); margin-bottom: var(--space-2);">4. Gen Z Drives Wellness Spend</div>
+          <p style="font-size: var(--text-sm); color: var(--color-text-muted);">60% of Gen Z/Millennials prefer functional beverages over traditional options. This cohort spends 22% more on health-positioned drinks. They discover brands through social — iO2's digital-first model is aligned.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">📊 Category Creation Comps — What's Possible</div>
+      <div class="scroll-area">
+        <table class="matrix-table">
+          <thead>
+            <tr>
+              <th>Brand</th><th>Category Created</th><th>Launch Year</th><th>Exit / Valuation</th><th>Key GTM Move</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td><span class="brand-name">Red Bull</span></td><td>Energy Drinks</td><td>1987</td><td><span class="tag tag-green">$100B+ Category</span></td><td>Extreme sports, event sponsorship</td></tr>
+            <tr><td><span class="brand-name">Vitaminwater</span></td><td>Functional Water</td><td>1996</td><td><span class="tag tag-green">$4.1B Acq. (Coca-Cola)</span></td><td>Celebrity equity (50 Cent), bold flavors</td></tr>
+            <tr><td><span class="brand-name">Celsius</span></td><td>Functional Energy</td><td>2004</td><td><span class="tag tag-green">$10B+ Mkt Cap</span></td><td>Gym distribution + athlete influencers</td></tr>
+            <tr><td><span class="brand-name">Liquid Death</span></td><td>Premium Canned Water</td><td>2017</td><td><span class="tag tag-green">$1.4B Valuation</span></td><td>Viral content, punk branding, DTC first</td></tr>
+            <tr><td><span class="brand-name">BODYARMOR</span></td><td>Sports Hydration</td><td>2011</td><td><span class="tag tag-green">$5.6B Acq. (Coca-Cola)</span></td><td>Kobe Bryant equity stake, athlete network</td></tr>
+            <tr class="highlight-row"><td><span class="brand-name brand-io2">iO2 Water</span></td><td>Oxygen-Enhanced Hydration</td><td>2026</td><td><span class="tag tag-blue">Pioneering Category</span></td><td>Biohacker community + science credibility</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================= PERSONAS ======================= -->
+  <section class="section" id="section-personas">
+    <div class="section-header">
+      <h1>Target Personas</h1>
+      <p>The four buyer archetypes who will drive iO2's early growth — ranked by acquisition priority.</p>
+    </div>
+
+    <div class="grid-2" style="margin-bottom: var(--space-6);">
+      <div class="persona-card">
+        <div class="persona-avatar" style="background: rgba(0,200,224,0.1);">🏋️</div>
+        <div class="persona-name">The Optimizer (Alex)</div>
+        <div class="persona-role">CrossFit athlete / MMA fighter / gym rat — Age 24–38</div>
+        <div class="persona-stat"><span class="persona-stat-key">Priority</span><span class="persona-stat-val" style="color:var(--color-green)">★★★★★ #1</span></div>
+        <div class="persona-stat"><span class="persona-stat-key">Avg. Spend on supplements</span><span class="persona-stat-val">$180/mo</span></div>
+        <div class="persona-stat"><span class="persona-stat-key">Primary discovery channel</span><span class="persona-stat-val">Instagram, TikTok, YouTube</span></div>
+        <div class="persona-stat"><span class="persona-stat-key">Price sensitivity</span><span class="persona-stat-val">Low — pays for performance</span></div>
+        <div class="persona-stat"><span class="persona-stat-key">Winning message</span><span class="persona-stat-val">"Cellular-level recovery edge"</span></div>
+      </div>
+      <div class="persona-card">
+        <div class="persona-avatar" style="background: rgba(0,229,160,0.1);">🧬</div>
+        <div class="persona-name">The Biohacker (Sam)</div>
+        <div class="persona-role">Self-experimenter, nootropic user, Huberman listener — Age 28–45</div>
+        <div class="persona-stat"><span class="persona-stat-key">Priority</span><span class="persona-stat-val" style="color:var(--color-green)">★★★★★ #2</span></div>
+        <div class="persona-stat"><span class="persona-stat-key">Avg. Spend on biohacking</span><span class="persona-stat-val">$400/mo</span></div>
+        <div class="persona-stat"><span class="persona-stat-key">Primary discovery channel</span><span class="persona-stat-val">Podcasts, Reddit, Twitter/X</span></div>
+        <div class="persona-stat"><span class="persona-stat-key">Price sensitivity</span><span class="persona-stat-val">Very low — pays for novelty</span></div>
+        <div class="persona-stat"><span class="persona-stat-key">Winning message</span><span class="persona-stat-val">"60mg/L dissolved O₂ — verified"</span></div>
+      </div>
+      <div class="persona-card">
+        <div class="persona-avatar" style="background: rgba(255,209,102,0.1);">💼</div>
+        <div class="persona-name">The Wellness Pro (Jordan)</div>
+        <div class="persona-role">Health-conscious exec, yoga practitioner, clean eater — Age 30–50</div>
+        <div class="persona-stat"><span class="persona-stat-key">Priority</span><span class="persona-stat-val" style="color:var(--color-gold)">★★★★☆ #3</span></div>
+        <div class="persona-stat"><span class="persona-stat-key">Avg. Spend on premium beverages</span><span class="persona-stat-val">$90/mo</span></div>
+        <div class="persona-stat"><span class="persona-stat-key">Primary discovery channel</span><span class="persona-stat-val">Whole Foods shelf, LinkedIn, Pinterest</span></div>
+        <div class="persona-stat"><span class="persona-stat-key">Price sensitivity</span><span class="persona-stat-val">Medium — brand-driven purchase</span></div>
+        <div class="persona-stat"><span class="persona-stat-key">Winning message</span><span class="persona-stat-val">"Clean hydration, nothing artificial"</span></div>
+      </div>
+      <div class="persona-card">
+        <div class="persona-avatar" style="background: rgba(255,140,66,0.1);">🏥</div>
+        <div class="persona-name">The Medical Consumer (Chris)</div>
+        <div class="persona-role">COPD patient, post-surgery recovery, chronic fatigue sufferer — Age 40–65</div>
+        <div class="persona-stat"><span class="persona-stat-key">Priority</span><span class="persona-stat-val" style="color:var(--color-orange)">★★★☆☆ #4 (Phase 2)</span></div>
+        <div class="persona-stat"><span class="persona-stat-key">Avg. monthly healthcare spend</span><span class="persona-stat-val">$600+/mo</span></div>
+        <div class="persona-stat"><span class="persona-stat-key">Primary discovery channel</span><span class="persona-stat-val">Doctor recommendation, TV</span></div>
+        <div class="persona-stat"><span class="persona-stat-key">Price sensitivity</span><span class="persona-stat-val">Low if physician-endorsed</span></div>
+        <div class="persona-stat"><span class="persona-stat-key">Winning message</span><span class="persona-stat-val">"COPD 75%→93% O₂ sat. results"</span></div>
+      </div>
+    </div>
+
+    <div class="chart-container">
+      <div class="chart-header">
+        <div>
+          <div class="chart-title">Persona Acquisition Priority & LTV Index</div>
+          <div class="chart-subtitle">Radar score across 5 dimensions per persona</div>
+        </div>
+      </div>
+      <div class="chart-canvas-wrap"><canvas id="radarChart"></canvas></div>
+    </div>
+  </section>
+
+  <!-- ======================= COMPETITORS ======================= -->
+  <section class="section" id="section-competitors">
+    <div class="section-header">
+      <h1>Competitor Matrix</h1>
+      <p>Where iO2 wins, where it must defend, and who to watch in the oxygenated beverage space.</p>
+    </div>
+
+    <div class="card" style="margin-bottom: var(--space-6);">
+      <div class="card-title">Full Competitive Scorecard</div>
+      <div class="scroll-area matrix-wrapper">
+        <table class="matrix-table">
+          <thead>
+            <tr>
+              <th>Brand</th><th>Category</th><th>Price/16oz</th>
+              <th>DO Level</th><th>Patent</th><th>Distribution</th>
+              <th>Social Following</th><th>Threat Level</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="highlight-row">
+              <td><span class="brand-name brand-io2">iO2 Water</span></td>
+              <td><span class="tag tag-blue">Oxygenated</span></td>
+              <td>$4–6</td>
+              <td><strong style="color:var(--color-green)">60 mg/L</strong></td>
+              <td><span class="tag tag-green">✓ Patent</span></td>
+              <td>DTC + Fitness</td>
+              <td>Building</td>
+              <td>—</td>
+            </tr>
+            <tr>
+              <td><span class="brand-name">Liquid Death</span></td>
+              <td><span class="tag tag-blue">Premium Water</span></td>
+              <td>$2.50–3</td>
+              <td>Standard</td>
+              <td><span class="tag tag-red">✗</span></td>
+              <td>National Retail</td>
+              <td>14M+ (TikTok+IG)</td>
+              <td><span class="tag tag-orange">Medium — brand comp</span></td>
+            </tr>
+            <tr>
+              <td><span class="brand-name">O2 Natural Recovery</span></td>
+              <td><span class="tag tag-orange">Oxygenated</span></td>
+              <td>$3–4</td>
+              <td>~35 mg/L</td>
+              <td><span class="tag tag-red">✗</span></td>
+              <td>Regional specialty</td>
+              <td>Small</td>
+              <td><span class="tag tag-green">Low — limited reach</span></td>
+            </tr>
+            <tr>
+              <td><span class="brand-name">Oxygen Plus</span></td>
+              <td><span class="tag tag-orange">Canned O₂</span></td>
+              <td>$10–15 (inhale)</td>
+              <td>N/A (inhale)</td>
+              <td><span class="tag tag-red">✗</span></td>
+              <td>Online + specialty</td>
+              <td>Medium</td>
+              <td><span class="tag tag-green">Low — different delivery</span></td>
+            </tr>
+            <tr>
+              <td><span class="brand-name">Oxigen Beverages</span></td>
+              <td><span class="tag tag-orange">Oxygenated Water</span></td>
+              <td>$3–5</td>
+              <td>~30 mg/L</td>
+              <td><span class="tag tag-red">✗</span></td>
+              <td>Mid-tier grocery</td>
+              <td>Niche</td>
+              <td><span class="tag tag-orange">Medium — most similar</span></td>
+            </tr>
+            <tr>
+              <td><span class="brand-name">Essentia Water</span></td>
+              <td><span class="tag tag-blue">Alkaline 9.5pH</span></td>
+              <td>$2–3</td>
+              <td>Standard</td>
+              <td><span class="tag tag-red">✗</span></td>
+              <td>Wide retail/grocery</td>
+              <td>Medium</td>
+              <td><span class="tag tag-orange">Medium — premium hydration</span></td>
+            </tr>
+            <tr>
+              <td><span class="brand-name">Celsius</span></td>
+              <td><span class="tag tag-red">Energy/Functional</span></td>
+              <td>$2.50–3</td>
+              <td>None</td>
+              <td><span class="tag tag-red">✗</span></td>
+              <td>Massive — all retail</td>
+              <td>10M+</td>
+              <td><span class="tag tag-orange">High — mindshare battle</span></td>
+            </tr>
+            <tr>
+              <td><span class="brand-name">BODYARMOR</span></td>
+              <td><span class="tag tag-red">Sports Hydration</span></td>
+              <td>$2–2.50</td>
+              <td>None</td>
+              <td><span class="tag tag-red">✗</span></td>
+              <td>National (Coca-Cola)</td>
+              <td>Large</td>
+              <td><span class="tag tag-red">High — athlete-focused comp</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-title">iO2 Differentiation Score vs. Top Rivals</div>
+        <div style="display: flex; flex-direction: column; gap: var(--space-4); margin-top: var(--space-2);">
+          <div>
+            <div style="display:flex;justify-content:space-between;margin-bottom:6px;font-size:var(--text-sm);">
+              <span style="color:var(--color-text-muted);">vs. Liquid Death</span><span style="font-weight:700;color:var(--color-green)">+82% differentiated</span>
+            </div>
+            <div class="progress-track"><div class="progress-fill" style="width:82%;background:linear-gradient(90deg,var(--color-primary),var(--color-green));"></div></div>
+          </div>
+          <div>
+            <div style="display:flex;justify-content:space-between;margin-bottom:6px;font-size:var(--text-sm);">
+              <span style="color:var(--color-text-muted);">vs. Oxigen Beverages</span><span style="font-weight:700;color:var(--color-primary)">+58% differentiated</span>
+            </div>
+            <div class="progress-track"><div class="progress-fill" style="width:58%;background:linear-gradient(90deg,var(--color-primary),#0068ff);"></div></div>
+          </div>
+          <div>
+            <div style="display:flex;justify-content:space-between;margin-bottom:6px;font-size:var(--text-sm);">
+              <span style="color:var(--color-text-muted);">vs. Celsius</span><span style="font-weight:700;color:var(--color-gold)">+74% differentiated</span>
+            </div>
+            <div class="progress-track"><div class="progress-fill" style="width:74%;background:linear-gradient(90deg,var(--color-gold),var(--color-orange));"></div></div>
+          </div>
+          <div>
+            <div style="display:flex;justify-content:space-between;margin-bottom:6px;font-size:var(--text-sm);">
+              <span style="color:var(--color-text-muted);">vs. BODYARMOR</span><span style="font-weight:700;color:var(--color-orange)">+69% differentiated</span>
+            </div>
+            <div class="progress-track"><div class="progress-fill" style="width:69%;background:linear-gradient(90deg,var(--color-orange),var(--color-red));"></div></div>
+          </div>
+        </div>
+      </div>
+      <div class="chart-container" style="border:none;padding:var(--space-6);background:var(--color-surface);border:1px solid var(--color-border);border-radius:var(--radius-xl);">
+        <div class="chart-title" style="margin-bottom:var(--space-4);">Competitive Positioning Map</div>
+        <div class="chart-canvas-wrap"><canvas id="bubbleChart"></canvas></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================= SWOT ======================= -->
+  <section class="section" id="section-swot">
+    <div class="section-header">
+      <h1>SWOT Analysis</h1>
+      <p>Honest assessment of iO2's strategic position — where to lean in and what to guard against.</p>
+    </div>
+    <div class="swot-grid">
+      <div class="swot-quadrant swot-s">
+        <div class="swot-label">💪 Strengths</div>
+        <ul class="swot-list">
+          <li>Patented OxyBound™ oxygen retention technology — no direct patent competitor</li>
+          <li>60 mg/L dissolved oxygen — 5-7x above standard water</li>
+          <li>Clinical validation: COPD 75%→93% oxygen saturation results</li>
+          <li>9.0 pH smooth profile — taste advantage vs competitors</li>
+          <li>Zero sugar, zero caffeine, zero additives — clean label for any demographic</li>
+          <li>Co-packer identified + 40+ year supply chain expert on founding team</li>
+          <li>Premium can design — shelf presence rivals Liquid Death aesthetically</li>
+          <li>Multi-market play: wellness, sports, medical, lifestyle</li>
+        </ul>
+      </div>
+      <div class="swot-quadrant swot-w">
+        <div class="swot-label">⚠️ Weaknesses</div>
+        <ul class="swot-list">
+          <li>Pre-revenue — no proven sales traction yet</li>
+          <li>Limited brand awareness vs established competitors</li>
+          <li>Consumer skepticism about "oxygenated water" health claims (NIH studies conflicted)</li>
+          <li>Premium price point ($4–6) limits mass market accessibility</li>
+          <li>No national distribution partner yet</li>
+          <li>Small founding team — bandwidth constraints at launch</li>
+          <li>Health claims must be carefully worded to avoid FDA issues</li>
+          <li>Coconut water SKU adds complexity to early operations</li>
+        </ul>
+      </div>
+      <div class="swot-quadrant swot-o">
+        <div class="swot-label">🚀 Opportunities</div>
+        <ul class="swot-list">
+          <li>First-mover with IP in oxygen-enhanced water category</li>
+          <li>Biohacking culture primed for oxygen-based products</li>
+          <li>Hangover recovery market ($2.5B) — unique, untapped beverage angle</li>
+          <li>Hospital/clinical B2B channel as proprietary distribution moat</li>
+          <li>White-label licensing to global beverage brands (Pepsi, Coca-Cola)</li>
+          <li>Agriculture/aquaculture oxygen tech B2B play</li>
+          <li>Gen Z TikTok virality potential — science + "try this" content format</li>
+          <li>Canned water 7.0% CAGR tailwind — format already validated</li>
+        </ul>
+      </div>
+      <div class="swot-quadrant swot-t">
+        <div class="swot-label">🔥 Threats</div>
+        <ul class="swot-list">
+          <li>Large CPG (Coca-Cola, PepsiCo) can replicate if category gains traction</li>
+          <li>Scientific community skepticism — "oxygenated water" controversy is real</li>
+          <li>FDA regulatory risk if medical claims are made without clinical trials</li>
+          <li>High CAC in premium beverage DTC (avg $72+ per subscriber)</li>
+          <li>Oxigen Beverages and O2 Natural already have shelf space</li>
+          <li>Consumer taste test failure risk — blind tests may not justify premium</li>
+          <li>Capital burn risk — functional beverage launch routinely exceeds $5M</li>
+          <li>Shelf life and oxygen retention degradation over time</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================= POSITIONING ======================= -->
+  <section class="section" id="section-positioning">
+    <div class="section-header">
+      <h1>Brand Positioning</h1>
+      <p>How iO2 should own the oxygen-enhanced hydration category and what messaging works for each audience.</p>
+    </div>
+
+    <div class="grid-2" style="margin-bottom: var(--space-6);">
+      <div class="card">
+        <div class="card-title">🎯 Core Positioning Statement</div>
+        <div style="background: var(--color-surface-2); border-left: 3px solid var(--color-primary); padding: var(--space-5); border-radius: 0 var(--radius-lg) var(--radius-lg) 0; margin-bottom: var(--space-5);">
+          <p style="font-family: var(--font-display); font-size: var(--text-lg); font-weight: 600; line-height: 1.5; color: var(--color-text);">
+            "For performance athletes, wellness optimizers, and health-conscious consumers who demand more from hydration — iO2 is the only patented oxygen-enhanced water that delivers 60 mg/L of dissolved oxygen, powering cellular energy, accelerating recovery, and proving that clean hydration can be the most advanced thing you put in your body."
+          </p>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: var(--space-3);">
+          <div style="display:flex;gap:var(--space-3);align-items:flex-start;">
+            <span class="tag tag-blue">Tagline 1</span>
+            <span style="font-size:var(--text-sm); font-style: italic;">"Don't Just Hydrate. Oxygenate."</span>
+          </div>
+          <div style="display:flex;gap:var(--space-3);align-items:flex-start;">
+            <span class="tag tag-green">Tagline 2</span>
+            <span style="font-size:var(--text-sm); font-style: italic;">"The Oxygen Edge™ — for Health, Performance & Recovery."</span>
+          </div>
+          <div style="display:flex;gap:var(--space-3);align-items:flex-start;">
+            <span class="tag tag-gold">Tagline 3</span>
+            <span style="font-size:var(--text-sm); font-style: italic;">"Life. In Every Drop."</span>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">📢 Messaging by Audience</div>
+        <div style="display:flex;flex-direction:column;gap:var(--space-4);">
+          <div style="padding:var(--space-4);background:var(--color-surface-2);border-radius:var(--radius-lg);">
+            <div style="font-size:var(--text-xs);font-weight:700;text-transform:uppercase;color:var(--color-primary);margin-bottom:var(--space-2);">Athletes & Fitness</div>
+            <p style="font-size:var(--text-sm);color:var(--color-text-muted);">"Oxygen fuels ATP. More oxygen = more power, faster lactate clearance, quicker recovery. iO2 gives you the cellular edge your training demands — without stimulants."</p>
+          </div>
+          <div style="padding:var(--space-4);background:var(--color-surface-2);border-radius:var(--radius-lg);">
+            <div style="font-size:var(--text-xs);font-weight:700;text-transform:uppercase;color:var(--color-green);margin-bottom:var(--space-2);">Biohackers</div>
+            <p style="font-size:var(--text-sm);color:var(--color-text-muted);">"Lab-verified 60 mg/L dissolved oxygen. Patented OxyBound™ retention. The science is real — measure your blood oxygen before and after. This isn't placebo water."</p>
+          </div>
+          <div style="padding:var(--space-4);background:var(--color-surface-2);border-radius:var(--radius-lg);">
+            <div style="font-size:var(--text-xs);font-weight:700;text-transform:uppercase;color:var(--color-gold);margin-bottom:var(--space-2);">Wellness Consumers</div>
+            <p style="font-size:var(--text-sm);color:var(--color-text-muted);">"Two ingredients. Water. Oxygen. Nothing else. iO2 is the cleanest thing you can drink — premium hydration the way nature intended, but smarter."</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">⚠️ FDA & Claims Strategy — Critical Guardrails</div>
+      <div class="grid-3">
+        <div style="padding:var(--space-4);background:var(--color-green-dim);border:1px solid rgba(0,229,160,0.2);border-radius:var(--radius-lg);">
+          <div style="font-size:var(--text-xs);font-weight:800;text-transform:uppercase;color:var(--color-green);margin-bottom:var(--space-3);">✅ Safe to Say</div>
+          <ul style="display:flex;flex-direction:column;gap:var(--space-2);">
+            <li style="font-size:var(--text-sm);color:var(--color-text-muted);">"Contains elevated dissolved oxygen"</li>
+            <li style="font-size:var(--text-sm);color:var(--color-text-muted);">"Premium oxygen-enhanced hydration"</li>
+            <li style="font-size:var(--text-sm);color:var(--color-text-muted);">"60 mg/L dissolved oxygen verified"</li>
+            <li style="font-size:var(--text-sm);color:var(--color-text-muted);">"Clean formula — zero additives"</li>
+            <li style="font-size:var(--text-sm);color:var(--color-text-muted);">"Preferred by athletes and biohackers"</li>
+          </ul>
+        </div>
+        <div style="padding:var(--space-4);background:var(--color-gold-dim);border:1px solid rgba(255,209,102,0.2);border-radius:var(--radius-lg);">
+          <div style="font-size:var(--text-xs);font-weight:800;text-transform:uppercase;color:var(--color-gold);margin-bottom:var(--space-3);">🧪 Use with Context</div>
+          <ul style="display:flex;flex-direction:column;gap:var(--space-2);">
+            <li style="font-size:var(--text-sm);color:var(--color-text-muted);">"May support recovery" (not "improves")</li>
+            <li style="font-size:var(--text-sm);color:var(--color-text-muted);">Cite science articles, not personal claims</li>
+            <li style="font-size:var(--text-sm);color:var(--color-text-muted);">Use testimonials with "individual results"</li>
+            <li style="font-size:var(--text-sm);color:var(--color-text-muted);">Study references with full context</li>
+            <li style="font-size:var(--text-sm);color:var(--color-text-muted);">COPD data — physician-only context</li>
+          </ul>
+        </div>
+        <div style="padding:var(--space-4);background:var(--color-red-dim);border:1px solid rgba(255,77,109,0.2);border-radius:var(--radius-lg);">
+          <div style="font-size:var(--text-xs);font-weight:800;text-transform:uppercase;color:var(--color-red);margin-bottom:var(--space-3);">🚫 Never Say</div>
+          <ul style="display:flex;flex-direction:column;gap:var(--space-2);">
+            <li style="font-size:var(--text-sm);color:var(--color-text-muted);">"Treats COPD / Alzheimer's / hypoxia"</li>
+            <li style="font-size:var(--text-sm);color:var(--color-text-muted);">"Clinically proven to cure or treat"</li>
+            <li style="font-size:var(--text-sm);color:var(--color-text-muted);">"FDA approved" (unless it is)</li>
+            <li style="font-size:var(--text-sm);color:var(--color-text-muted);">"Oxygen enters bloodstream via GI"</li>
+            <li style="font-size:var(--text-sm);color:var(--color-text-muted);">"Guaranteed performance results"</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================= CHANNELS ======================= -->
+  <section class="section" id="section-channels">
+    <div class="section-header">
+      <h1>Channel Playbook</h1>
+      <p>Every GTM avenue rated — what to activate immediately, what to test, and what to skip.</p>
+    </div>
+
+    <div class="tabs">
+      <button class="tab-btn active" onclick="switchTab(this,'go-channels')">🟢 Launch NOW</button>
+      <button class="tab-btn" onclick="switchTab(this,'test-channels')">🟡 Test & Measure</button>
+      <button class="tab-btn" onclick="switchTab(this,'avoid-channels')">🔴 Avoid / Later</button>
+    </div>
+
+    <div class="tab-panel active" id="go-channels">
+      <div class="grid-auto">
+
+        <div class="channel-card">
+          <div class="channel-verdict verdict-go">🟢 Launch Now</div>
+          <div class="channel-icon" style="background:var(--color-primary-dim);color:var(--color-primary);">
+            <i data-lucide="smartphone"></i>
+          </div>
+          <div class="channel-name">TikTok Organic + Paid</div>
+          <div class="channel-desc">The single highest-ROI channel for a novel, visual product. Science content, "what happens to your cells" hooks, before/after oxygen saturation pulse-ox videos. Liquid Death proved canned water goes viral — iO2's angle is even more compelling.</div>
+          <div class="channel-metrics">
+            <div class="channel-metric"><div class="channel-metric-label">Avg ROAS</div><div class="channel-metric-value" style="color:var(--color-green)">3-8x</div></div>
+            <div class="channel-metric"><div class="channel-metric-label">Audience Fit</div><div class="channel-metric-value" style="color:var(--color-green)">★★★★★</div></div>
+            <div class="channel-metric"><div class="channel-metric-label">Monthly Budget</div><div class="channel-metric-value">$5K–25K</div></div>
+            <div class="channel-metric"><div class="channel-metric-label">Start Timeline</div><div class="channel-metric-value">Week 1</div></div>
+          </div>
+        </div>
+
+        <div class="channel-card">
+          <div class="channel-verdict verdict-go">🟢 Launch Now</div>
+          <div class="channel-icon" style="background:var(--color-purple-dim);color:var(--color-purple);">
+            <i data-lucide="users"></i>
+          </div>
+          <div class="channel-name">Micro-Influencer Seeding (Biohacking)</div>
+          <div class="channel-desc">Seed 100–200 micro-influencers in the biohacking, CrossFit, recovery, and functional fitness niches. Provide free product + content brief. Target creators with 10K–200K followers. Authenticity > reach. Budget ~$30–50K for seeding program.</div>
+          <div class="channel-metrics">
+            <div class="channel-metric"><div class="channel-metric-label">Avg ROAS</div><div class="channel-metric-value" style="color:var(--color-green)">5-12x</div></div>
+            <div class="channel-metric"><div class="channel-metric-label">CAC</div><div class="channel-metric-value">$15–45</div></div>
+            <div class="channel-metric"><div class="channel-metric-label">Budget</div><div class="channel-metric-value">$30–50K</div></div>
+            <div class="channel-metric"><div class="channel-metric-label">Timeline</div><div class="channel-metric-value">Month 1–2</div></div>
+          </div>
+        </div>
+
+        <div class="channel-card">
+          <div class="channel-verdict verdict-go">🟢 Launch Now</div>
+          <div class="channel-icon" style="background:var(--color-green-dim);color:var(--color-green);">
+            <i data-lucide="shopping-bag"></i>
+          </div>
+          <div class="channel-name">DTC Shopify + Subscription</div>
+          <div class="channel-desc">Core revenue engine. Subscription model converts at 43% with trial offers. Average DTC beverage subscriber LTV = $225+ over 12 months. Recurring revenue de-risks the business and compounds brand loyalty. Auto-ship every 2-4 weeks at 15% discount.</div>
+          <div class="channel-metrics">
+            <div class="channel-metric"><div class="channel-metric-label">Sub. LTV</div><div class="channel-metric-value" style="color:var(--color-green)">$225+</div></div>
+            <div class="channel-metric"><div class="channel-metric-label">Conv. Rate (trial)</div><div class="channel-metric-value">43%</div></div>
+            <div class="channel-metric"><div class="channel-metric-label">Setup Cost</div><div class="channel-metric-value">$5–10K</div></div>
+            <div class="channel-metric"><div class="channel-metric-label">Timeline</div><div class="channel-metric-value">Week 1</div></div>
+          </div>
+        </div>
+
+        <div class="channel-card">
+          <div class="channel-verdict verdict-go">🟢 Launch Now</div>
+          <div class="channel-icon" style="background:var(--color-orange-dim);color:var(--color-orange);">
+            <i data-lucide="dumbbell"></i>
+          </div>
+          <div class="channel-name">CrossFit / MMA / Fitness Gym Direct Sales</div>
+          <div class="channel-desc">Partner with 50-100 high-end gyms, CrossFit boxes, and MMA training centers for in-gym cooler placement and event sampling. These are your early adopter evangelists. Commission-based gym rep program at 20–25% margins. Target premium gyms in major metros.</div>
+          <div class="channel-metrics">
+            <div class="channel-metric"><div class="channel-metric-label">Close Rate</div><div class="channel-metric-value" style="color:var(--color-green)">High (B2B)</div></div>
+            <div class="channel-metric"><div class="channel-metric-label">Avg Account Rev</div><div class="channel-metric-value">$2–8K/mo</div></div>
+            <div class="channel-metric"><div class="channel-metric-label">Budget</div><div class="channel-metric-value">$10–20K</div></div>
+            <div class="channel-metric"><div class="channel-metric-label">Timeline</div><div class="channel-metric-value">Month 1</div></div>
+          </div>
+        </div>
+
+        <div class="channel-card">
+          <div class="channel-verdict verdict-go">🟢 Launch Now</div>
+          <div class="channel-icon" style="background:rgba(255,150,0,0.1);color:#ff9500;">
+            <i data-lucide="package"></i>
+          </div>
+          <div class="channel-name">Amazon FBA Launch</div>
+          <div class="channel-desc">$500B+ platform with built-in search intent. Beverage is the #3 fastest growing Amazon category. Optimize for "oxygen water", "oxygenated water", "clean hydration" keywords. Run Sponsored Products ads at launch. Amazon Prime subscribers buy 4x more than non-Prime.</div>
+          <div class="channel-metrics">
+            <div class="channel-metric"><div class="channel-metric-label">Avg ACOS target</div><div class="channel-metric-value" style="color:var(--color-green)">25–35%</div></div>
+            <div class="channel-metric"><div class="channel-metric-label">Monthly Run Rate</div><div class="channel-metric-value">$30–80K</div></div>
+            <div class="channel-metric"><div class="channel-metric-label">Setup Cost</div><div class="channel-metric-value">$3–5K</div></div>
+            <div class="channel-metric"><div class="channel-metric-label">Timeline</div><div class="channel-metric-value">Month 1–2</div></div>
+          </div>
+        </div>
+
+        <div class="channel-card">
+          <div class="channel-verdict verdict-go">🟢 Launch Now</div>
+          <div class="channel-icon" style="background:rgba(0,180,180,0.1);color:#00b4b4;">
+            <i data-lucide="heart-pulse"></i>
+          </div>
+          <div class="channel-name">Recovery Clinics & Sports Medicine</div>
+          <div class="channel-desc">Cryotherapy centers, hyperbaric O2 clinics, physical therapy, sports medicine offices — these venues are PRIMED. Their clients already believe in oxygen therapy. Position iO2 as complementary to treatment. White-label or branded sell-through. Physician endorsements unlock medical-tier credibility.</div>
+          <div class="channel-metrics">
+            <div class="channel-metric"><div class="channel-metric-label">Avg Account Rev</div><div class="channel-metric-value" style="color:var(--color-green)">$3–12K/mo</div></div>
+            <div class="channel-metric"><div class="channel-metric-label">Margin</div><div class="channel-metric-value">65–70%</div></div>
+            <div class="channel-metric"><div class="channel-metric-label">Budget</div><div class="channel-metric-value">$5–15K</div></div>
+            <div class="channel-metric"><div class="channel-metric-label">Timeline</div><div class="channel-metric-value">Month 2</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tab-panel" id="test-channels">
+      <div class="grid-auto">
+        <div class="channel-card">
+          <div class="channel-verdict verdict-test">🟡 Test</div>
+          <div class="channel-icon" style="background:var(--color-gold-dim);color:var(--color-gold);">
+            <i data-lucide="tv"></i>
+          </div>
+          <div class="channel-name">Short-Form DRTV (2-min spots)</div>
+          <div class="channel-desc">NOT a 30-minute infomercial. A 90-120 second direct-response spot on CTV/streaming (Hulu, YouTube TV, Pluto TV) targeting fitness/health segments. Production: $15–40K. Media buy: $20–50K test. Measure CPO (cost per order). Only scale if CPO &lt; $30.</div>
+          <div class="channel-metrics">
+            <div class="channel-metric"><div class="channel-metric-label">Production Cost</div><div class="channel-metric-value" style="color:var(--color-gold)">$15–40K</div></div>
+            <div class="channel-metric"><div class="channel-metric-label">Media Test Budget</div><div class="channel-metric-value">$20–50K</div></div>
+            <div class="channel-metric"><div class="channel-metric-label">CPO Threshold</div><div class="channel-metric-value">&lt;$30 to scale</div></div>
+            <div class="channel-metric"><div class="channel-metric-label">Timeline</div><div class="channel-metric-value">Month 3–4</div></div>
+          </div>
+        </div>
+
+        <div class="channel-card">
+          <div class="channel-verdict verdict-test">🟡 Test</div>
+          <div class="channel-icon" style="background:var(--color-purple-dim);color:var(--color-purple);">
+            <i data-lucide="mic"></i>
+          </div>
+          <div class="channel-name">Podcast Advertising</div>
+          <div class="channel-desc">Host-read ads on Joe Rogan, Huberman Lab, Lex Fridman, Mark Bell's Power Project, and fitness/biohacking pods. CPM averages $20–40 for health/fitness. Host-read ads convert 2-4x vs produced ads. Budget $15–30K per show for 4-6 weeks to measure lift.</div>
+          <div class="channel-metrics">
+            <div class="channel-metric"><div class="channel-metric-label">Avg CPM</div><div class="channel-metric-value" style="color:var(--color-gold)">$20–40</div></div>
+            <div class="channel-metric"><div class="channel-metric-label">Conv. vs Produced</div><div class="channel-metric-value">2-4x better</div></div>
+            <div class="channel-metric"><div class="channel-metric-label">Budget per Show</div><div class="channel-metric-value">$15–30K</div></div>
+            <div class="channel-metric"><div class="channel-metric-label">Timeline</div><div class="channel-metric-value">Month 2–3</div></div>
+          </div>
+        </div>
+
+        <div class="channel-card">
+          <div class="channel-verdict verdict-test">🟡 Test</div>
+          <div class="channel-icon" style="background:var(--color-orange-dim);color:var(--color-orange);">
+            <i data-lucide="award"></i>
+          </div>
+          <div class="channel-name">NIL Athlete Deals</div>
+          <div class="channel-desc">College athletes and emerging pro fighters/runners are cheaper and more authentic than A-list celebrities. NIL deals for a CrossFit Games athlete or rising UFC fighter can start at $5–15K/year. Authenticity and daily usage content is what converts. Target: someone who'd actually drink this.</div>
+          <div class="channel-metrics">
+            <div class="channel-metric"><div class="channel-metric-label">Deal Range</div><div class="channel-metric-value" style="color:var(--color-gold)">$5–25K/yr</div></div>
+            <div class="channel-metric"><div class="channel-metric-label">Audience Fit</div><div class="channel-metric-value">★★★★☆</div></div>
+            <div class="channel-metric"><div class="channel-metric-label">Content Deliverables</div><div class="channel-metric-value">2-4 posts/mo</div></div>
+            <div class="channel-metric"><div class="channel-metric-label">Timeline</div><div class="channel-metric-value">Month 2</div></div>
+          </div>
+        </div>
+
+        <div class="channel-card">
+          <div class="channel-verdict verdict-test">🟡 Test</div>
+          <div class="channel-icon" style="background:var(--color-green-dim);color:var(--color-green);">
+            <i data-lucide="store"></i>
+          </div>
+          <div class="channel-name">Whole Foods / Sprouts Pilot</div>
+          <div class="channel-desc">Premium grocery is the right retailer for iO2 — not Walmart, not CVS. Whole Foods local buyer program allows regional pitches. Target 10–20 stores in a metro. Sprouts Farmers Market actively seeks emerging health brands. Need: broker relationship, $15–30K slotting, demos.</div>
+          <div class="channel-metrics">
+            <div class="channel-metric"><div class="channel-metric-label">Slotting Fees</div><div class="channel-metric-value" style="color:var(--color-gold)">$15–30K</div></div>
+            <div class="channel-metric"><div class="channel-metric-label">Avg Weekly Velocity</div><div class="channel-metric-value">1.5–3 cases</div></div>
+            <div class="channel-metric"><div class="channel-metric-label">Margin to Brand</div><div class="channel-metric-value">40–50%</div></div>
+            <div class="channel-metric"><div class="channel-metric-label">Timeline</div><div class="channel-metric-value">Month 4–6</div></div>
+          </div>
+        </div>
+
+        <div class="channel-card">
+          <div class="channel-verdict verdict-test">🟡 Test</div>
+          <div class="channel-icon" style="background:rgba(0,100,200,0.1);color:#4488ff;">
+            <i data-lucide="building-2"></i>
+          </div>
+          <div class="channel-name">Corporate Wellness / B2B Office</div>
+          <div class="channel-desc">Tech companies, law firms, and healthcare orgs spend heavily on employee wellness. Offer branded bulk corporate packages (50–500 cases/mo). High AOV, low CAC since it's a single B2B sale. Use LinkedIn outreach targeting wellness/HR directors. Partner with office snack distributors (Canteen, Aramark).</div>
+          <div class="channel-metrics">
+            <div class="channel-metric"><div class="channel-metric-label">Avg Contract Value</div><div class="channel-metric-value" style="color:var(--color-gold)">$2–15K/mo</div></div>
+            <div class="channel-metric"><div class="channel-metric-label">Sales Cycle</div><div class="channel-metric-value">30–60 days</div></div>
+            <div class="channel-metric"><div class="channel-metric-label">CAC</div><div class="channel-metric-value">$200–500</div></div>
+            <div class="channel-metric"><div class="channel-metric-label">Timeline</div><div class="channel-metric-value">Month 3</div></div>
+          </div>
+        </div>
+
+        <div class="channel-card">
+          <div class="channel-verdict verdict-test">🟡 Test</div>
+          <div class="channel-icon" style="background:rgba(200,50,200,0.1);color:#d44dff;">
+            <i data-lucide="cocktail"></i>
+          </div>
+          <div class="channel-name">Nightlife / Hangover Recovery</div>
+          <div class="channel-desc">iO2's hangover angle (stimulates Alcohol Dehydrogenase enzyme) is untapped and wildly viral. Partner with premium bars, rooftop venues, and hotel bars in Miami, Vegas, NYC, LA. "After Party Water" — a $4 premium upsell. This hook could go massively viral on TikTok.</div>
+          <div class="channel-metrics">
+            <div class="channel-metric"><div class="channel-metric-label">Hangover Market TAM</div><div class="channel-metric-value" style="color:var(--color-gold)">$2.5B</div></div>
+            <div class="channel-metric"><div class="channel-metric-label">Viral Potential</div><div class="channel-metric-value">★★★★★</div></div>
+            <div class="channel-metric"><div class="channel-metric-label">Bar Margin</div><div class="channel-metric-value">300-400%</div></div>
+            <div class="channel-metric"><div class="channel-metric-label">Timeline</div><div class="channel-metric-value">Month 2–3</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tab-panel" id="avoid-channels">
+      <div class="grid-auto">
+        <div class="channel-card">
+          <div class="channel-verdict verdict-avoid">🔴 Avoid Now</div>
+          <div class="channel-icon" style="background:var(--color-red-dim);color:var(--color-red);">
+            <i data-lucide="tv-2"></i>
+          </div>
+          <div class="channel-name">Full 30-Min Infomercial</div>
+          <div class="channel-desc">Production: $100K–500K. Media buy for a single national run: $50K–200K+. A 30-minute infomercial requires a proven product, high repeat purchase rate, and a compelling demo. iO2 is water — difficult to demonstrate visually over 30 minutes. ROI is declining in this format. Phase 2+ only.</div>
+          <div class="channel-metrics">
+            <div class="channel-metric"><div class="channel-metric-label">Production Cost</div><div class="channel-metric-value" style="color:var(--color-red)">$100–500K</div></div>
+            <div class="channel-metric"><div class="channel-metric-label">Break-Even Time</div><div class="channel-metric-value">9–18 months</div></div>
+            <div class="channel-metric"><div class="channel-metric-label">Risk Level</div><div class="channel-metric-value">Very High</div></div>
+          </div>
+        </div>
+
+        <div class="channel-card">
+          <div class="channel-verdict verdict-avoid">🔴 Avoid Now</div>
+          <div class="channel-icon" style="background:var(--color-red-dim);color:var(--color-red);">
+            <i data-lucide="store"></i>
+          </div>
+          <div class="channel-name">Mass Grocery (Walmart, Target, Kroger)</div>
+          <div class="channel-desc">Slotting fees: $30–100K per chain. Minimum velocity requirements. Price pressure to compete on commodity. These retailers dilute the premium positioning. Mass grocery is a Phase 3 play after you have 12+ months of verified sell-through at premium outlets. Entering too early destroys margin and brand.</div>
+          <div class="channel-metrics">
+            <div class="channel-metric"><div class="channel-metric-label">Slotting Fees</div><div class="channel-metric-value" style="color:var(--color-red)">$30–100K+</div></div>
+            <div class="channel-metric"><div class="channel-metric-label">Brand Dilution Risk</div><div class="channel-metric-value">High</div></div>
+            <div class="channel-metric"><div class="channel-metric-label">Margin to Brand</div><div class="channel-metric-value">25–35%</div></div>
+          </div>
+        </div>
+
+        <div class="channel-card">
+          <div class="channel-verdict verdict-avoid">🔴 Avoid Now</div>
+          <div class="channel-icon" style="background:var(--color-red-dim);color:var(--color-red);">
+            <i data-lucide="newspaper"></i>
+          </div>
+          <div class="channel-name">Print / Magazine Advertising</div>
+          <div class="channel-desc">Magazines like Men's Health, Shape, or GQ charge $15–75K per full-page ad. Zero trackability. Demographic skews older. The wellness audience you need is on TikTok and Instagram. Print readership has declined 40%+ in 10 years. Spend is better allocated to digital channels with measurable ROAS.</div>
+          <div class="channel-metrics">
+            <div class="channel-metric"><div class="channel-metric-label">Cost per Full-Page</div><div class="channel-metric-value" style="color:var(--color-red)">$15–75K</div></div>
+            <div class="channel-metric"><div class="channel-metric-label">Trackability</div><div class="channel-metric-value">Near zero</div></div>
+            <div class="channel-metric"><div class="channel-metric-label">Audience Fit</div><div class="channel-metric-value">★★☆☆☆</div></div>
+          </div>
+        </div>
+
+        <div class="channel-card">
+          <div class="channel-verdict verdict-avoid">🔴 Avoid Now</div>
+          <div class="channel-icon" style="background:var(--color-red-dim);color:var(--color-red);">
+            <i data-lucide="star"></i>
+          </div>
+          <div class="channel-name">A-List Celebrity Equity Deals</div>
+          <div class="channel-desc">The Kobe Bryant / BODYARMOR play costs millions pre-revenue. Celebrity equity deals without traction (sales proof) give away too much upside. Wait until Year 2–3 with $5M+ revenue. Then a celebrity equity deal is transformative. Now it's a desperation move. NIL athletes are better ROI at this stage.</div>
+          <div class="channel-metrics">
+            <div class="channel-metric"><div class="channel-metric-label">Equity Cost</div><div class="channel-metric-value" style="color:var(--color-red)">5–15% equity</div></div>
+            <div class="channel-metric"><div class="channel-metric-label">Cash Component</div><div class="channel-metric-value">$500K–2M+</div></div>
+            <div class="channel-metric"><div class="channel-metric-label">Risk Level</div><div class="channel-metric-value">Very High</div></div>
+          </div>
+        </div>
+
+        <div class="channel-card">
+          <div class="channel-verdict verdict-avoid">🔴 Avoid Now</div>
+          <div class="channel-icon" style="background:var(--color-red-dim);color:var(--color-red);">
+            <i data-lucide="calendar"></i>
+          </div>
+          <div class="channel-name">Trade Shows as Primary Channel</div>
+          <div class="channel-desc">Expo West, BevNet Live, etc. cost $10–50K per show booth + travel + sampling. As an awareness tool after you have product and distribution, useful. As a primary revenue driver, no. Buyers at these shows demand existing market proof before committing. Use only as supplemental to active channels.</div>
+          <div class="channel-metrics">
+            <div class="channel-metric"><div class="channel-metric-label">Cost per Show</div><div class="channel-metric-value" style="color:var(--color-red)">$10–50K</div></div>
+            <div class="channel-metric"><div class="channel-metric-label">Direct Revenue</div><div class="channel-metric-value">Minimal</div></div>
+            <div class="channel-metric"><div class="channel-metric-label">Best Use Case</div><div class="channel-metric-value">Year 2+</div></div>
+          </div>
+        </div>
+
+        <div class="channel-card">
+          <div class="channel-verdict verdict-avoid">🔴 Avoid Now</div>
+          <div class="channel-icon" style="background:var(--color-red-dim);color:var(--color-red);">
+            <i data-lucide="radio"></i>
+          </div>
+          <div class="channel-name">Broad National TV (Network Spots)</div>
+          <div class="channel-desc">Prime-time network TV CPMs are $25–50. A single national campaign costs $500K–5M and requires massive reach to generate meaningful sales. Without distribution in all markets, you're paying for awareness you can't convert. This is a $20M+ revenue play. Not for launch.</div>
+          <div class="channel-metrics">
+            <div class="channel-metric"><div class="channel-metric-label">Min Effective Budget</div><div class="channel-metric-value" style="color:var(--color-red)">$500K–5M</div></div>
+            <div class="channel-metric"><div class="channel-metric-label">CPM Range</div><div class="channel-metric-value">$25–50</div></div>
+            <div class="channel-metric"><div class="channel-metric-label">Stage Required</div><div class="channel-metric-value">Year 3+</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================= INFOMERCIAL ======================= -->
+  <section class="section" id="section-infomercial">
+    <div class="section-header">
+      <h1>Infomercial / DRTV Analysis</h1>
+      <p>Detailed breakdown of whether infomercial-style TV advertising is worth the investment for iO2 — at launch vs. at scale.</p>
+    </div>
+
+    <div class="kpi-grid">
+      <div class="kpi-card red">
+        <div class="kpi-label">Full 30-Min Infomercial Cost</div>
+        <div class="kpi-value">$300K+</div>
+        <div class="kpi-subtext">Production + initial media buy</div>
+        <div class="kpi-change down">⚠️ Not recommended at launch</div>
+      </div>
+      <div class="kpi-card gold">
+        <div class="kpi-label">2-Min DRTV Spot Cost</div>
+        <div class="kpi-value">$40–80K</div>
+        <div class="kpi-subtext">Production + targeted media test</div>
+        <div class="kpi-change up">✓ Worth testing Phase 2</div>
+      </div>
+      <div class="kpi-card primary">
+        <div class="kpi-label">DRTV Target CPO</div>
+        <div class="kpi-value">&lt;$30</div>
+        <div class="kpi-subtext">Cost per order to be profitable</div>
+        <div class="kpi-change up">Only scale if hit</div>
+      </div>
+      <div class="kpi-card green">
+        <div class="kpi-label">CTV/Streaming DRTV</div>
+        <div class="kpi-value">Best Bet</div>
+        <div class="kpi-subtext">Hulu, YouTube TV, connected TV</div>
+        <div class="kpi-change up">↑ Targeted, trackable</div>
+      </div>
+    </div>
+
+    <div class="grid-2" style="margin-bottom:var(--space-6);">
+      <div class="verdict-card verdict-maybe">
+        <div class="verdict-title">🟡 Short-Form DRTV: Worth Testing (Phase 2)</div>
+        <p style="font-size:var(--text-sm);color:var(--color-text-muted);margin-bottom:var(--space-4);">A 90–120 second direct-response spot on Connected TV (CTV) and streaming platforms can work for iO2 — but only after you have proof of concept from digital channels. Here's the play:</p>
+        <ul style="display:flex;flex-direction:column;gap:var(--space-2);">
+          <li style="font-size:var(--text-sm);color:var(--color-text-muted);">📺 <strong>Target platform:</strong> Hulu, Peacock, YouTube TV, Tubi — not broadcast</li>
+          <li style="font-size:var(--text-sm);color:var(--color-text-muted);">🎯 <strong>Target audience:</strong> Fitness, health, and biohacking content viewers (highly targetable)</li>
+          <li style="font-size:var(--text-sm);color:var(--color-text-muted);">💰 <strong>Test budget:</strong> $20–50K media + $15–40K production = $35–90K total test</li>
+          <li style="font-size:var(--text-sm);color:var(--color-text-muted);">📊 <strong>Success metric:</strong> CPO under $30. If above, kill it. If under, scale 3–5x.</li>
+          <li style="font-size:var(--text-sm);color:var(--color-text-muted);">🕐 <strong>Timing:</strong> Month 4–6 of launch, after social proof is established</li>
+          <li style="font-size:var(--text-sm);color:var(--color-text-muted);">⚡ <strong>Hook:</strong> "60 mg/L of oxygen. Your water has 8." Visual pulse oximeter demo. Urgency CTA.</li>
+        </ul>
+      </div>
+      <div class="verdict-card verdict-no">
+        <div class="verdict-title">🔴 Full 30-Min Infomercial: Not Yet</div>
+        <p style="font-size:var(--text-sm);color:var(--color-text-muted);margin-bottom:var(--space-4);">The traditional 30-minute infomercial format is not the right move at launch. Here's why the math doesn't work yet:</p>
+        <ul style="display:flex;flex-direction:column;gap:var(--space-2);">
+          <li style="font-size:var(--text-sm);color:var(--color-text-muted);">📺 <strong>Production cost:</strong> $100K–500K for a credible 30-min infomercial</li>
+          <li style="font-size:var(--text-sm);color:var(--color-text-muted);">📡 <strong>Media buy:</strong> $50K–200K for a single national test run</li>
+          <li style="font-size:var(--text-sm);color:var(--color-text-muted);">⚠️ <strong>Product demo problem:</strong> Water is hard to demonstrate visually for 30 min</li>
+          <li style="font-size:var(--text-sm);color:var(--color-text-muted);">📉 <strong>ROI trend:</strong> Average DRTV ROI at launch has been declining for 10+ years</li>
+          <li style="font-size:var(--text-sm);color:var(--color-text-muted);">🔬 <strong>Claims risk:</strong> 30-min format requires strong health claims to fill time — FDA risk</li>
+          <li style="font-size:var(--text-sm);color:var(--color-text-muted);">✅ <strong>When it works:</strong> Year 3+ with $10M+ revenue, strong testimonials, clinical data</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">📊 DRTV vs. Digital Channel Cost Comparison</div>
+      <div class="chart-canvas-wrap"><canvas id="drtvChart"></canvas></div>
+    </div>
+  </section>
+
+  <!-- ======================= DIGITAL ======================= -->
+  <section class="section" id="section-digital">
+    <div class="section-header">
+      <h1>Digital & Social Strategy</h1>
+      <p>The full digital playbook — content pillars, platform priorities, and the content engine that turns science into virality.</p>
+    </div>
+
+    <div class="grid-2" style="margin-bottom:var(--space-6);">
+      <div class="chart-container">
+        <div class="chart-header">
+          <div>
+            <div class="chart-title">Platform Priority Score</div>
+            <div class="chart-subtitle">Score = audience fit × conversion potential × iO2 content-market fit</div>
+          </div>
+        </div>
+        <div class="chart-canvas-wrap"><canvas id="platformChart"></canvas></div>
+      </div>
+      <div class="card">
+        <div class="card-title">🎬 5 Content Pillars That Drive Sales</div>
+        <div style="display:flex;flex-direction:column;gap:var(--space-4);">
+          <div style="display:flex;gap:var(--space-3);align-items:flex-start;">
+            <div style="width:32px;height:32px;border-radius:var(--radius-full);background:var(--color-primary-dim);color:var(--color-primary);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-weight:800;font-size:var(--text-sm);">1</div>
+            <div><strong style="font-size:var(--text-sm);">The Science Hook</strong><br><span style="font-size:var(--text-xs);color:var(--color-text-muted);">"Normal water has 8 mg/L oxygen. iO2 has 60. Your mitochondria don't know what hit them." — Pulse ox before/after demo. Lab sheet reveal. This is the #1 TikTok format.</span></div>
+          </div>
+          <div style="display:flex;gap:var(--space-3);align-items:flex-start;">
+            <div style="width:32px;height:32px;border-radius:var(--radius-full);background:var(--color-green-dim);color:var(--color-green);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-weight:800;font-size:var(--text-sm);">2</div>
+            <div><strong style="font-size:var(--text-sm);">The Challenge / Self-Experiment</strong><br><span style="font-size:var(--text-xs);color:var(--color-text-muted);">"I drank iO2 for 30 days during my training — here's my performance data." Athlete tracking app screenshots, energy levels, PRs. UGC gold.</span></div>
+          </div>
+          <div style="display:flex;gap:var(--space-3);align-items:flex-start;">
+            <div style="width:32px;height:32px;border-radius:var(--radius-full);background:var(--color-gold-dim);color:var(--color-gold);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-weight:800;font-size:var(--text-sm);">3</div>
+            <div><strong style="font-size:var(--text-sm);">The Comparison / Disruption</strong><br><span style="font-size:var(--text-xs);color:var(--color-text-muted);">"Your energy drink has 200mg caffeine, 40g sugar, and artificial flavors. iO2 has oxygen. That's it." Category challenger content that converts jaded energy drink users.</span></div>
+          </div>
+          <div style="display:flex;gap:var(--space-3);align-items:flex-start;">
+            <div style="width:32px;height:32px;border-radius:var(--radius-full);background:var(--color-orange-dim);color:var(--color-orange);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-weight:800;font-size:var(--text-sm);">4</div>
+            <div><strong style="font-size:var(--text-sm);">The Recovery Arc</strong><br><span style="font-size:var(--text-xs);color:var(--color-text-muted);">Post-workout recovery content. "Ice bath + iO2 = the fastest way I've ever recovered." Pairs with cryotherapy, cold plunge trends. High engagement.</span></div>
+          </div>
+          <div style="display:flex;gap:var(--space-3);align-items:flex-start;">
+            <div style="width:32px;height:32px;border-radius:var(--radius-full);background:var(--color-purple-dim);color:var(--color-purple);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-weight:800;font-size:var(--text-sm);">5</div>
+            <div><strong style="font-size:var(--text-sm);">The Hangover Hook (Viral Wildcard)</strong><br><span style="font-size:var(--text-xs);color:var(--color-text-muted);">"The morning after: 2 iO2 cans at 2am. I swear by it." Nightlife/recovery angle is TikTok's sweet spot. Massive organic share potential. This could be the viral moment.</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">📱 Platform-by-Platform Playbook</div>
+      <div class="scroll-area">
+        <table class="matrix-table">
+          <thead>
+            <tr><th>Platform</th><th>Priority</th><th>Content Type</th><th>Posting Freq</th><th>Budget/Mo</th><th>KPI to Track</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><strong>TikTok</strong></td><td><span class="tag tag-green">★★★★★ #1</span></td><td>15–60s science, challenge, story</td><td>1–2x daily</td><td>$10–25K</td><td>View rate, saves, link clicks</td></tr>
+            <tr><td><strong>Instagram Reels</strong></td><td><span class="tag tag-green">★★★★★ #1</span></td><td>Reels + Stories + carousels</td><td>7–10x/week</td><td>$8–20K</td><td>Reach, story swipe-up, DM orders</td></tr>
+            <tr><td><strong>YouTube</strong></td><td><span class="tag tag-blue">★★★★☆ #2</span></td><td>3–10 min science deep-dives</td><td>1–2x/week</td><td>$5–10K ads</td><td>Watch time, CTR, subscribes</td></tr>
+            <tr><td><strong>Podcasts (ad buys)</strong></td><td><span class="tag tag-blue">★★★★☆ #2</span></td><td>Host-read 60s spots</td><td>2–4 shows/mo</td><td>$15–30K</td><td>Promo code redemptions</td></tr>
+            <tr><td><strong>X / Twitter</strong></td><td><span class="tag tag-gold">★★★☆☆ #3</span></td><td>Biohacker threads, science posts</td><td>3–5x/week</td><td>Organic</td><td>Impressions, retweets, mentions</td></tr>
+            <tr><td><strong>Reddit</strong></td><td><span class="tag tag-gold">★★★☆☆ #3</span></td><td>r/biohacking, r/crossfit AMA/posts</td><td>2–3x/week</td><td>Organic</td><td>Upvotes, comments, DM requests</td></tr>
+            <tr><td><strong>LinkedIn</strong></td><td><span class="tag tag-orange">★★☆☆☆ #4</span></td><td>B2B corporate wellness, investor updates</td><td>3x/week</td><td>Organic</td><td>Profile views, B2B leads</td></tr>
+            <tr><td><strong>Email / SMS</strong></td><td><span class="tag tag-green">★★★★★</span></td><td>Subscriber sequences, promotions</td><td>2x/week email</td><td>$1–3K</td><td>Open rate, revenue per send</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================= PARTNERSHIPS ======================= -->
+  <section class="section" id="section-partnerships">
+    <div class="section-header">
+      <h1>Partnerships & B2B Strategy</h1>
+      <p>High-leverage partnerships that build distribution, credibility, and recurring revenue simultaneously.</p>
+    </div>
+
+    <div class="grid-2" style="margin-bottom:var(--space-6);">
+      <div class="card">
+        <div class="card-title">🤝 Priority Partnership Tiers</div>
+        <div style="display:flex;flex-direction:column;gap:var(--space-4);">
+          <div style="padding:var(--space-4);background:var(--color-green-dim);border:1px solid rgba(0,229,160,0.15);border-radius:var(--radius-lg);">
+            <div style="font-size:var(--text-xs);font-weight:800;text-transform:uppercase;color:var(--color-green);margin-bottom:var(--space-2);">Tier 1 — Activate Immediately</div>
+            <ul style="display:flex;flex-direction:column;gap:var(--space-1);">
+              <li style="font-size:var(--text-sm);color:var(--color-text-muted);">• Hyperbaric oxygen clinics (O2 therapy centers)</li>
+              <li style="font-size:var(--text-sm);color:var(--color-text-muted);">• Cryotherapy / ice bath centers</li>
+              <li style="font-size:var(--text-sm);color:var(--color-text-muted);">• CrossFit affiliate gyms (nationwide 15,000+ boxes)</li>
+              <li style="font-size:var(--text-sm);color:var(--color-text-muted);">• MMA training centers & UFC gyms</li>
+              <li style="font-size:var(--text-sm);color:var(--color-text-muted);">• Physical therapy / sports medicine offices</li>
+            </ul>
+          </div>
+          <div style="padding:var(--space-4);background:var(--color-gold-dim);border:1px solid rgba(255,209,102,0.15);border-radius:var(--radius-lg);">
+            <div style="font-size:var(--text-xs);font-weight:800;text-transform:uppercase;color:var(--color-gold);margin-bottom:var(--space-2);">Tier 2 — Month 2–4</div>
+            <ul style="display:flex;flex-direction:column;gap:var(--space-1);">
+              <li style="font-size:var(--text-sm);color:var(--color-text-muted);">• Performance nutrition supplement brands (co-marketing)</li>
+              <li style="font-size:var(--text-sm);color:var(--color-text-muted);">• Triathlon / marathon race series sponsorship</li>
+              <li style="font-size:var(--text-sm);color:var(--color-text-muted);">• Luxury hotel / spa wellness programs</li>
+              <li style="font-size:var(--text-sm);color:var(--color-text-muted);">• Corporate wellness platforms (Gympass, ClassPass)</li>
+              <li style="font-size:var(--text-sm);color:var(--color-text-muted);">• Premium airline lounge / first-class amenity packs</li>
+            </ul>
+          </div>
+          <div style="padding:var(--space-4);background:var(--color-primary-dim);border:1px solid rgba(0,200,224,0.15);border-radius:var(--radius-lg);">
+            <div style="font-size:var(--text-xs);font-weight:800;text-transform:uppercase;color:var(--color-primary);margin-bottom:var(--space-2);">Tier 3 — Phase 2 (Year 2+)</div>
+            <ul style="display:flex;flex-direction:column;gap:var(--space-1);">
+              <li style="font-size:var(--text-sm);color:var(--color-text-muted);">• Hospital system clinical partnerships</li>
+              <li style="font-size:var(--text-sm);color:var(--color-text-muted);">• White-label licensing to global beverage brands</li>
+              <li style="font-size:var(--text-sm);color:var(--color-text-muted);">• Military / Special Forces supply programs</li>
+              <li style="font-size:var(--text-sm);color:var(--color-text-muted);">• International distribution (UAE, Singapore, UK)</li>
+              <li style="font-size:var(--color-text-muted);font-size:var(--text-sm);">• Agriculture / aquaculture oxygen tech licensing</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">💼 B2B Revenue Calculator</div>
+        <div style="display:flex;flex-direction:column;gap:var(--space-5);">
+          <div style="padding:var(--space-4);background:var(--color-surface-2);border-radius:var(--radius-lg);">
+            <div style="font-size:var(--text-xs);font-weight:700;text-transform:uppercase;color:var(--color-text-muted);margin-bottom:var(--space-3);">50 Gym Accounts</div>
+            <div style="display:flex;justify-content:space-between;font-size:var(--text-sm);">
+              <span style="color:var(--color-text-muted);">Avg revenue per gym/mo</span>
+              <span style="font-weight:700;">$3,000</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;font-size:var(--text-sm);margin-top:var(--space-2);">
+              <span style="color:var(--color-text-muted);">Monthly recurring</span>
+              <span style="font-weight:700;color:var(--color-green);">$150,000</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;font-size:var(--text-sm);margin-top:var(--space-2);">
+              <span style="color:var(--color-text-muted);">Annual recurring</span>
+              <span style="font-weight:700;color:var(--color-green);">$1.8M</span>
+            </div>
+          </div>
+          <div style="padding:var(--space-4);background:var(--color-surface-2);border-radius:var(--radius-lg);">
+            <div style="font-size:var(--text-xs);font-weight:700;text-transform:uppercase;color:var(--color-text-muted);margin-bottom:var(--space-3);">20 Recovery Clinics</div>
+            <div style="display:flex;justify-content:space-between;font-size:var(--text-sm);">
+              <span style="color:var(--color-text-muted);">Avg revenue per clinic/mo</span>
+              <span style="font-weight:700;">$6,000</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;font-size:var(--text-sm);margin-top:var(--space-2);">
+              <span style="color:var(--color-text-muted);">Monthly recurring</span>
+              <span style="font-weight:700;color:var(--color-primary);">$120,000</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;font-size:var(--text-sm);margin-top:var(--space-2);">
+              <span style="color:var(--color-text-muted);">Annual recurring</span>
+              <span style="font-weight:700;color:var(--color-primary);">$1.44M</span>
+            </div>
+          </div>
+          <div style="padding:var(--space-4);background:var(--color-surface-2);border-radius:var(--radius-lg);">
+            <div style="font-size:var(--text-xs);font-weight:700;text-transform:uppercase;color:var(--color-text-muted);margin-bottom:var(--space-3);">30 Corporate Wellness Accounts</div>
+            <div style="display:flex;justify-content:space-between;font-size:var(--text-sm);">
+              <span style="color:var(--color-text-muted);">Avg revenue per account/mo</span>
+              <span style="font-weight:700;">$5,000</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;font-size:var(--text-sm);margin-top:var(--space-2);">
+              <span style="color:var(--color-text-muted);">Monthly recurring</span>
+              <span style="font-weight:700;color:var(--color-gold);">$150,000</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;font-size:var(--text-sm);margin-top:var(--space-2);">
+              <span style="color:var(--color-text-muted);">Annual recurring</span>
+              <span style="font-weight:700;color:var(--color-gold);">$1.8M</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================= ROADMAP ======================= -->
+  <section class="section" id="section-roadmap">
+    <div class="section-header">
+      <h1>Launch Roadmap</h1>
+      <p>The phased execution plan — from pre-launch through national scale.</p>
+    </div>
+
+    <div class="grid-2">
+      <div>
+        <div class="timeline">
+          <div class="timeline-item">
+            <div class="timeline-dot"></div>
+            <div class="timeline-phase">Phase 1 — Q2-Q3 2026</div>
+            <div class="timeline-title">Foundation & Community</div>
+            <div class="timeline-items">
+              <div class="timeline-tag">Finalize product formulation</div>
+              <div class="timeline-tag">Launch DTC (DrinkIO2.com)</div>
+              <div class="timeline-tag">Shopify + subscription setup</div>
+              <div class="timeline-tag">TikTok/Instagram content engine</div>
+              <div class="timeline-tag">100 micro-influencer seeding</div>
+              <div class="timeline-tag">50 gym partnerships</div>
+              <div class="timeline-tag">Amazon FBA listing</div>
+              <div class="timeline-tag">Recovery clinic outreach</div>
+            </div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-dot milestone"></div>
+            <div class="timeline-phase">🏆 MILESTONE — Q4 2026</div>
+            <div class="timeline-title">$500K+ Revenue Milestone</div>
+            <div class="timeline-items">
+              <div class="timeline-tag">First 1,000 subscribers</div>
+              <div class="timeline-tag">Seed round close ($5M)</div>
+              <div class="timeline-tag">First press coverage</div>
+            </div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-dot"></div>
+            <div class="timeline-phase">Phase 2 — Q1-Q2 2027</div>
+            <div class="timeline-title">Retail Pilot & Media</div>
+            <div class="timeline-items">
+              <div class="timeline-tag">Whole Foods / Sprouts 20 doors</div>
+              <div class="timeline-tag">Podcast ad campaign launch</div>
+              <div class="timeline-tag">CTV / DRTV short-form test</div>
+              <div class="timeline-tag">NIL athlete deals (2–3)</div>
+              <div class="timeline-tag">Corporate wellness outreach</div>
+              <div class="timeline-tag">Hangover/nightlife channel test</div>
+              <div class="timeline-tag">Series A prep ($10–20M)</div>
+            </div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-dot milestone"></div>
+            <div class="timeline-phase">🏆 MILESTONE — Q3 2027</div>
+            <div class="timeline-title">$8M ARR Target</div>
+            <div class="timeline-items">
+              <div class="timeline-tag">Series A close</div>
+              <div class="timeline-tag">50+ retail doors</div>
+              <div class="timeline-tag">10,000+ active subscribers</div>
+            </div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-dot"></div>
+            <div class="timeline-phase">Phase 3 — 2027–2028</div>
+            <div class="timeline-title">National Scale</div>
+            <div class="timeline-items">
+              <div class="timeline-tag">National retail distributor</div>
+              <div class="timeline-tag">International expansion (UAE, UK)</div>
+              <div class="timeline-tag">Flavor / product line extension</div>
+              <div class="timeline-tag">Clinical partnership (hospital)</div>
+              <div class="timeline-tag">White-label licensing</div>
+              <div class="timeline-tag">Full brand campaign</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="chart-container" style="margin-bottom:var(--space-5);">
+          <div class="chart-title" style="margin-bottom:var(--space-4);">Revenue by Channel — Year 1 Mix</div>
+          <div class="chart-canvas-wrap"><canvas id="channelMixChart"></canvas></div>
+        </div>
+        <div class="card">
+          <div class="card-title">⚡ 90-Day Quick Win Sprint</div>
+          <div class="checklist">
+            <div class="checklist-item">
+              <div class="checklist-icon check-go"><i data-lucide="check" style="width:10px;height:10px;"></i></div>
+              <div class="checklist-text"><strong>Day 1–7: Digital Setup</strong><span>Shopify store live, TikTok/IG accounts created, content calendar built, product photography done</span></div>
+            </div>
+            <div class="checklist-item">
+              <div class="checklist-icon check-go"><i data-lucide="check" style="width:10px;height:10px;"></i></div>
+              <div class="checklist-text"><strong>Day 7–14: Influencer Outreach</strong><span>Email 200 micro-influencers. Send product to first 50 responders. Brief: pulse-ox demo content</span></div>
+            </div>
+            <div class="checklist-item">
+              <div class="checklist-icon check-go"><i data-lucide="check" style="width:10px;height:10px;"></i></div>
+              <div class="checklist-text"><strong>Day 14–30: Gym Partnerships</strong><span>Call/visit 50 gyms in target metro. Offer 30-day free trial stock + commission deal</span></div>
+            </div>
+            <div class="checklist-item">
+              <div class="checklist-icon check-go"><i data-lucide="check" style="width:10px;height:10px;"></i></div>
+              <div class="checklist-text"><strong>Day 30–45: Amazon FBA Live</strong><span>List product, run Sponsored Products at 35% ACOS target, A+ content page</span></div>
+            </div>
+            <div class="checklist-item">
+              <div class="checklist-icon check-test"><i data-lucide="minus" style="width:10px;height:10px;"></i></div>
+              <div class="checklist-text"><strong>Day 45–60: First Paid Social</strong><span>Launch TikTok paid ads targeting fitness/biohacking. $500/day test budget. Optimize to CPO &lt;$20</span></div>
+            </div>
+            <div class="checklist-item">
+              <div class="checklist-icon check-test"><i data-lucide="minus" style="width:10px;height:10px;"></i></div>
+              <div class="checklist-text"><strong>Day 60–90: Recovery Clinic Deals</strong><span>Close first 5 recovery/hyperbaric clinic accounts. Locked recurring revenue baseline</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================= FINANCIALS ======================= -->
+  <section class="section" id="section-financials">
+    <div class="section-header">
+      <h1>Financial Model</h1>
+      <p>5-year projections, unit economics, and the funding stack to hit targets.</p>
+    </div>
+
+    <div class="kpi-grid">
+      <div class="kpi-card primary"><div class="kpi-label">Year 1 Revenue</div><div class="kpi-value">$2M</div><div class="kpi-subtext">DTC + gym + Amazon</div></div>
+      <div class="kpi-card green"><div class="kpi-label">Year 3 Revenue</div><div class="kpi-value">$22M</div><div class="kpi-subtext">Retail + national expansion</div></div>
+      <div class="kpi-card gold"><div class="kpi-label">Year 5 Revenue</div><div class="kpi-value">$120M</div><div class="kpi-subtext">National + international</div></div>
+      <div class="kpi-card orange"><div class="kpi-label">Gross Margin Target</div><div class="kpi-value">70%+</div><div class="kpi-subtext">Premium pricing + low COGS</div></div>
+    </div>
+
+    <div class="grid-2" style="margin-bottom:var(--space-6);">
+      <div class="chart-container">
+        <div class="chart-header"><div><div class="chart-title">Revenue vs. Gross Profit Forecast</div><div class="chart-subtitle">$M — 5-Year Model</div></div></div>
+        <div class="chart-canvas-wrap"><canvas id="finForecastChart"></canvas></div>
+      </div>
+      <div class="chart-container">
+        <div class="chart-header"><div><div class="chart-title">Seed Fund Allocation ($5M)</div><div class="chart-subtitle">Use of funds breakdown</div></div></div>
+        <div class="chart-canvas-wrap"><canvas id="fundChart"></canvas></div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:var(--space-6);">
+      <div class="card-title">Unit Economics Model</div>
+      <div class="scroll-area">
+        <table class="fin-table">
+          <thead>
+            <tr><th>Metric</th><th>DTC (Shopify)</th><th>Amazon FBA</th><th>B2B (Gym)</th><th>Retail (WF/Sprouts)</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Avg Selling Price (16oz)</td><td>$5.50</td><td>$5.00</td><td>$4.00</td><td>$4.50</td></tr>
+            <tr><td>COGS (estimated)</td><td>$1.10</td><td>$1.10</td><td>$1.10</td><td>$1.10</td></tr>
+            <tr><td>Gross Profit / Unit</td><td>$4.40 (80%)</td><td>$2.60 (52%)</td><td>$2.90 (72%)</td><td>$1.80 (40%)</td></tr>
+            <tr><td>Customer CAC</td><td>$25–45</td><td>$8–15</td><td>$200–500</td><td>Slotting: $30–100K</td></tr>
+            <tr><td>Avg Order Value</td><td>$55 (12-pack)</td><td>$30 (6-pack)</td><td>$2,400/mo</td><td>N/A (velocity)</td></tr>
+            <tr><td>Subscriber LTV (12mo)</td><td>$225–300</td><td>$120</td><td>$28,800</td><td>N/A</td></tr>
+            <tr class="total-row"><td>Channel Priority</td><td>★★★★★ #1</td><td>★★★★☆ #2</td><td>★★★★★ #1</td><td>★★★☆☆ #3</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">📈 5-Year Revenue Breakdown by Channel ($M)</div>
+      <div class="scroll-area">
+        <table class="fin-table">
+          <thead>
+            <tr><th>Channel</th><th>Year 1</th><th>Year 2</th><th>Year 3</th><th>Year 4</th><th>Year 5</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>DTC (Shopify/Sub)</td><td>$0.8M</td><td>$2.5M</td><td>$6M</td><td>$12M</td><td>$25M</td></tr>
+            <tr><td>Amazon FBA</td><td>$0.4M</td><td>$1.5M</td><td>$4M</td><td>$8M</td><td>$15M</td></tr>
+            <tr><td>B2B (Gyms/Clinics)</td><td>$0.6M</td><td>$2M</td><td>$5M</td><td>$10M</td><td>$20M</td></tr>
+            <tr><td>Premium Retail</td><td>$0.2M</td><td>$1.5M</td><td>$5M</td><td>$15M</td><td>$35M</td></tr>
+            <tr><td>Licensing/White-Label</td><td>$0</td><td>$0.5M</td><td>$2M</td><td>$10M</td><td>$25M</td></tr>
+            <tr class="total-row"><td>TOTAL</td><td>$2M</td><td>$8M</td><td>$22M</td><td>$55M</td><td>$120M</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- VERDICT SECTION -->
+  <section class="section" id="section-verdict">
+    <div class="section-header">
+      <h1>The Verdict</h1>
+      <p>The non-negotiable moves, ranked by impact. This is your Superbowl winning playbook.</p>
+    </div>
+
+    <div style="background: linear-gradient(135deg, rgba(0,200,224,0.08), rgba(0,104,255,0.05)); border: 1px solid rgba(0,200,224,0.2); border-radius: var(--radius-2xl); padding: var(--space-8); margin-bottom: var(--space-6);">
+      <div style="font-family: var(--font-display); font-size: var(--text-xl); font-weight: 800; margin-bottom: var(--space-4); background: linear-gradient(135deg, var(--color-primary), #0068ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">The iO2 Superbowl Playbook — 10 Non-Negotiables</div>
+      <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--space-4);">
+        <div style="display:flex;gap:var(--space-3);">
+          <div style="width:28px;height:28px;background:var(--color-primary);border-radius:var(--radius-full);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:var(--text-xs);color:#000;flex-shrink:0;">1</div>
+          <div><strong style="font-size:var(--text-sm);">TikTok is your TV.</strong><br><span style="font-size:var(--text-xs);color:var(--color-text-muted);">Treat it like your #1 channel. Post daily. Science hooks. Pulse-ox demos. The "60mg vs 8mg" visualization alone could get 10M views.</span></div>
+        </div>
+        <div style="display:flex;gap:var(--space-3);">
+          <div style="width:28px;height:28px;background:var(--color-green);border-radius:var(--radius-full);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:var(--text-xs);color:#000;flex-shrink:0;">2</div>
+          <div><strong style="font-size:var(--text-sm);">Biohackers first, mass market second.</strong><br><span style="font-size:var(--text-xs);color:var(--color-text-muted);">Early adopters create social proof. Reddit r/biohacking + Huberman-adjacent audience is your launch tribe. Earn their trust and they'll do the selling for you.</span></div>
+        </div>
+        <div style="display:flex;gap:var(--space-3);">
+          <div style="width:28px;height:28px;background:var(--color-orange);border-radius:var(--radius-full);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:var(--text-xs);color:#000;flex-shrink:0;">3</div>
+          <div><strong style="font-size:var(--text-sm);">Subscriptions compound.</strong><br><span style="font-size:var(--text-xs);color:var(--color-text-muted);">1,000 subscribers at $55/month = $660K ARR before you sell a single unit at retail. Build the subscription base first. This is your valuation multiplier.</span></div>
+        </div>
+        <div style="display:flex;gap:var(--space-3);">
+          <div style="width:28px;height:28px;background:var(--color-gold);border-radius:var(--radius-full);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:var(--text-xs);color:#000;flex-shrink:0;">4</div>
+          <div><strong style="font-size:var(--text-sm);">Gyms and clinics are your retail stores.</strong><br><span style="font-size:var(--text-xs);color:var(--color-text-muted);">50 CrossFit boxes at $3K/month = $150K MRR. 20 recovery clinics at $6K/month = $120K MRR. B2B is faster, stickier, and higher margin than any retail channel.</span></div>
+        </div>
+        <div style="display:flex;gap:var(--space-3);">
+          <div style="width:28px;height:28px;background:var(--color-purple);border-radius:var(--radius-full);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:var(--text-xs);color:#fff;flex-shrink:0;">5</div>
+          <div><strong style="font-size:var(--text-sm);">The hangover angle is your viral wildcard.</strong><br><span style="font-size:var(--text-xs);color:var(--color-text-muted);">$2.5B hangover market. "The oxygen water that clears hangovers" will get shared more than any fitness post. This one angle could launch the brand into mainstream consciousness overnight.</span></div>
+        </div>
+        <div style="display:flex;gap:var(--space-3);">
+          <div style="width:28px;height:28px;background:var(--color-primary);border-radius:var(--radius-full);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:var(--text-xs);color:#000;flex-shrink:0;">6</div>
+          <div><strong style="font-size:var(--text-sm);">Patent = moat. Use it loudly.</strong><br><span style="font-size:var(--text-xs);color:var(--color-text-muted);">Every competitor who copies you validates your category. But your patent gives you 3–5 years of head start. "Patented OxyBound™" should be on every can, every ad, every press release.</span></div>
+        </div>
+        <div style="display:flex;gap:var(--space-3);">
+          <div style="width:28px;height:28px;background:var(--color-green);border-radius:var(--radius-full);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:var(--text-xs);color:#000;flex-shrink:0;">7</div>
+          <div><strong style="font-size:var(--text-sm);">Amazon is your fastest cash channel.</strong><br><span style="font-size:var(--text-xs);color:var(--color-text-muted);">People search "oxygen water" and "oxygenated water" on Amazon. You need to own those results. Launch with $5K/mo Amazon Ads at launch and capture inbound search demand.</span></div>
+        </div>
+        <div style="display:flex;gap:var(--space-3);">
+          <div style="width:28px;height:28px;background:var(--color-orange);border-radius:var(--radius-full);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:var(--text-xs);color:#000;flex-shrink:0;">8</div>
+          <div><strong style="font-size:var(--text-sm);">Credentials = credibility = premium price.</strong><br><span style="font-size:var(--text-xs);color:var(--color-text-muted);">Get 2–3 physicians, a sports scientist, and a credentialed lab to publicly endorse iO2. One quoted ESPN article or a Huberman mention is worth $500K in ad spend.</span></div>
+        </div>
+        <div style="display:flex;gap:var(--space-3);">
+          <div style="width:28px;height:28px;background:var(--color-gold);border-radius:var(--radius-full);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:var(--text-xs);color:#000;flex-shrink:0;">9</div>
+          <div><strong style="font-size:var(--text-sm);">Skip mass retail until you have pull.</strong><br><span style="font-size:var(--text-xs);color:var(--color-text-muted);">Retailers want brands that already have consumer demand. Build 12 months of DTC + gym sell-through data. Then walk into Whole Foods with numbers and get the deal on your terms.</span></div>
+        </div>
+        <div style="display:flex;gap:var(--space-3);">
+          <div style="width:28px;height:28px;background:var(--color-primary);border-radius:var(--radius-full);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:var(--text-xs);color:#000;flex-shrink:0;">10</div>
+          <div><strong style="font-size:var(--text-sm);">Build the category, own the category.</strong><br><span style="font-size:var(--text-xs);color:var(--color-text-muted);">You're not selling water. You're creating "oxygen-enhanced hydration" as a new segment. Every press mention, every piece of content, every partnership should reinforce that YOU are the category creator.</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="chart-container">
+      <div class="chart-header"><div><div class="chart-title">GTM Channel Priority Matrix</div><div class="chart-subtitle">Impact × Cost Efficiency Score — launch phase</div></div></div>
+      <div class="chart-canvas-wrap"><canvas id="priorityChart"></canvas></div>
+    </div>
+  </section>
+
+</main>
+</div>
+
+<!-- MOBILE TOGGLE -->
+<button class="mobile-toggle" onclick="toggleSidebar()" aria-label="Toggle menu">
+  <i data-lucide="menu" style="width:22px;height:22px;"></i>
+</button>
+
+<script>
+// ===== LUCIDE ICONS =====
+lucide.createIcons();
+
+// ===== SIDEBAR NAV =====
+const sectionTitles = {
+  overview: 'Mission Control',
+  market: 'Market Intelligence',
+  personas: 'Target Personas',
+  competitors: 'Competitor Matrix',
+  swot: 'SWOT Analysis',
+  positioning: 'Brand Positioning',
+  channels: 'Channel Playbook',
+  infomercial: 'Infomercial / DRTV Analysis',
+  digital: 'Digital & Social Strategy',
+  partnerships: 'Partnerships & B2B',
+  roadmap: 'Launch Roadmap',
+  financials: 'Financial Model',
+  verdict: 'The Verdict — Top 10 Plays'
+};
+
+function showSection(id) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.sidebar-link').forEach(l => l.classList.remove('active'));
+  document.getElementById('section-' + id).classList.add('active');
+  event && event.currentTarget && event.currentTarget.classList.add('active');
+  document.querySelector(`[onclick="showSection('${id}')"]`)?.classList.add('active');
+  document.getElementById('topbarTitle').textContent = sectionTitles[id] || id;
+  closeSidebar();
+  setTimeout(() => renderChartsForSection(id), 50);
+}
+
+function toggleSidebar() {
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('sidebarOverlay').classList.toggle('active');
+}
+function closeSidebar() {
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('sidebarOverlay').classList.remove('active');
+}
+
+function switchTab(btn, panelId) {
+  btn.closest('.section').querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  btn.closest('.section').querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById(panelId).classList.add('active');
+}
+
+// ===== CHART CONFIG =====
+const COLORS = {
+  primary: '#00c8e0', green: '#00e5a0', orange: '#ff8c42',
+  gold: '#ffd166', red: '#ff4d6d', purple: '#a78bfa',
+  blue: '#4488ff', text: '#8b96a8', surface: '#121922', border: 'rgba(255,255,255,0.08)'
+};
+
+Chart.defaults.color = COLORS.text;
+Chart.defaults.font.family = "'Space Grotesk', sans-serif";
+Chart.defaults.borderColor = COLORS.border;
+
+const chartDefaults = {
+  responsive: true,
+  maintainAspectRatio: false,
+  plugins: {
+    legend: { labels: { color: COLORS.text, boxWidth: 12, padding: 16, font: { size: 12 } } }
+  }
+};
+
+let chartsRendered = {};
+
+function renderChartsForSection(section) {
+  if (chartsRendered[section]) return;
+  chartsRendered[section] = true;
+
+  if (section === 'overview') {
+    // Revenue Chart
+    new Chart(document.getElementById('revenueChart'), {
+      type: 'bar',
+      data: {
+        labels: ['Year 1', 'Year 2', 'Year 3', 'Year 4', 'Year 5'],
+        datasets: [{
+          label: 'Revenue ($M)',
+          data: [2, 8, 22, 55, 120],
+          backgroundColor: [
+            'rgba(0,200,224,0.5)','rgba(0,200,224,0.6)','rgba(0,200,224,0.7)',
+            'rgba(0,200,224,0.85)','rgba(0,200,224,1)'
+          ],
+          borderColor: COLORS.primary,
+          borderWidth: 1,
+          borderRadius: 6,
+        }]
+      },
+      options: { ...chartDefaults,
+        scales: {
+          y: { grid: { color: COLORS.border }, ticks: { color: COLORS.text, callback: v => '$' + v + 'M' } },
+          x: { grid: { display: false }, ticks: { color: COLORS.text } }
+        }
+      }
+    });
+
+    // Market Pie
+    new Chart(document.getElementById('marketChart'), {
+      type: 'doughnut',
+      data: {
+        labels: ['Functional Beverages', 'Enhanced Water', 'Sports Nutrition', 'Hangover Market', 'Medical Oxygen'],
+        datasets: [{
+          data: [150, 14.87, 50, 2.5, 8],
+          backgroundColor: [COLORS.primary, COLORS.green, COLORS.orange, COLORS.gold, COLORS.purple],
+          borderWidth: 2, borderColor: COLORS.surface
+        }]
+      },
+      options: { ...chartDefaults,
+        plugins: { legend: { position: 'right', labels: { color: COLORS.text, boxWidth: 12, font: { size: 11 } } } },
+        cutout: '65%'
+      }
+    });
+  }
+
+  if (section === 'market') {
+    new Chart(document.getElementById('enhancedWaterChart'), {
+      type: 'line',
+      data: {
+        labels: ['2024', '2025', '2026', '2027', '2028', '2029', '2030'],
+        datasets: [{
+          label: 'Enhanced Water Market ($B)',
+          data: [8.79, 9.6, 10.48, 11.45, 12.5, 13.63, 14.87],
+          borderColor: COLORS.primary, backgroundColor: 'rgba(0,200,224,0.08)',
+          fill: true, tension: 0.4, pointBackgroundColor: COLORS.primary, pointRadius: 4
+        }]
+      },
+      options: { ...chartDefaults,
+        scales: {
+          y: { grid: { color: COLORS.border }, ticks: { callback: v => '$' + v + 'B', color: COLORS.text } },
+          x: { grid: { display: false }, ticks: { color: COLORS.text } }
+        }
+      }
+    });
+
+    new Chart(document.getElementById('trendChart'), {
+      type: 'bar',
+      data: {
+        labels: ['Active hydration improvement', 'Gen Z/Mil functional pref', 'Clean label preference', 'Premium water purchase', 'Supplement use (preventive)'],
+        datasets: [{
+          label: '% Consumers',
+          data: [73, 60, 65, 48, 55],
+          backgroundColor: [COLORS.primary, COLORS.green, COLORS.orange, COLORS.gold, COLORS.purple],
+          borderRadius: 4, borderWidth: 0
+        }]
+      },
+      options: { ...chartDefaults, indexAxis: 'y',
+        scales: {
+          x: { grid: { color: COLORS.border }, ticks: { callback: v => v + '%', color: COLORS.text }, max: 100 },
+          y: { grid: { display: false }, ticks: { color: COLORS.text, font: { size: 11 } } }
+        },
+        plugins: { legend: { display: false } }
+      }
+    });
+  }
+
+  if (section === 'personas') {
+    new Chart(document.getElementById('radarChart'), {
+      type: 'radar',
+      data: {
+        labels: ['LTV Potential', 'Acquisition Ease', 'Social Amplification', 'Price Tolerance', 'Brand Advocacy'],
+        datasets: [
+          { label: 'Optimizer (Athlete)', data: [85, 70, 90, 85, 88], borderColor: COLORS.primary, backgroundColor: 'rgba(0,200,224,0.1)', pointBackgroundColor: COLORS.primary },
+          { label: 'Biohacker', data: [92, 65, 95, 95, 90], borderColor: COLORS.green, backgroundColor: 'rgba(0,229,160,0.08)', pointBackgroundColor: COLORS.green },
+          { label: 'Wellness Pro', data: [72, 55, 65, 70, 70], borderColor: COLORS.gold, backgroundColor: 'rgba(255,209,102,0.08)', pointBackgroundColor: COLORS.gold },
+          { label: 'Medical (Phase 2)', data: [88, 35, 40, 85, 60], borderColor: COLORS.orange, backgroundColor: 'rgba(255,140,66,0.06)', pointBackgroundColor: COLORS.orange },
+        ]
+      },
+      options: { ...chartDefaults,
+        scales: { r: { grid: { color: COLORS.border }, ticks: { display: false }, pointLabels: { color: COLORS.text, font: { size: 11 } }, angleLines: { color: COLORS.border }, suggestedMin: 0, suggestedMax: 100 } }
+      }
+    });
+  }
+
+  if (section === 'competitors') {
+    new Chart(document.getElementById('bubbleChart'), {
+      type: 'bubble',
+      data: {
+        datasets: [
+          { label: 'iO2 Water', data: [{ x: 90, y: 85, r: 14 }], backgroundColor: 'rgba(0,200,224,0.7)', borderColor: COLORS.primary },
+          { label: 'Liquid Death', data: [{ x: 30, y: 95, r: 22 }], backgroundColor: 'rgba(255,77,109,0.4)', borderColor: COLORS.red },
+          { label: 'Celsius', data: [{ x: 25, y: 78, r: 28 }], backgroundColor: 'rgba(255,140,66,0.4)', borderColor: COLORS.orange },
+          { label: 'O2 Natural', data: [{ x: 70, y: 28, r: 8 }], backgroundColor: 'rgba(0,229,160,0.4)', borderColor: COLORS.green },
+          { label: 'Oxigen Beverages', data: [{ x: 65, y: 32, r: 9 }], backgroundColor: 'rgba(255,209,102,0.4)', borderColor: COLORS.gold },
+          { label: 'Essentia', data: [{ x: 35, y: 55, r: 16 }], backgroundColor: 'rgba(167,139,250,0.4)', borderColor: COLORS.purple },
+        ]
+      },
+      options: { ...chartDefaults,
+        scales: {
+          x: { title: { display: true, text: 'Oxygen Differentiation Score', color: COLORS.text }, grid: { color: COLORS.border }, ticks: { color: COLORS.text }, min: 0, max: 110 },
+          y: { title: { display: true, text: 'Brand Awareness / Distribution Scale', color: COLORS.text }, grid: { color: COLORS.border }, ticks: { color: COLORS.text }, min: 0, max: 110 }
+        }
+      }
+    });
+  }
+
+  if (section === 'digital') {
+    new Chart(document.getElementById('platformChart'), {
+      type: 'bar',
+      data: {
+        labels: ['TikTok', 'Instagram', 'YouTube', 'Podcasts', 'Amazon', 'Reddit/X', 'LinkedIn'],
+        datasets: [{
+          label: 'Priority Score (0-100)',
+          data: [97, 94, 78, 75, 85, 65, 42],
+          backgroundColor: [COLORS.primary, COLORS.green, COLORS.orange, COLORS.gold, COLORS.purple, COLORS.blue, COLORS.text],
+          borderRadius: 6, borderWidth: 0
+        }]
+      },
+      options: { ...chartDefaults,
+        scales: {
+          y: { grid: { color: COLORS.border }, max: 100, ticks: { color: COLORS.text } },
+          x: { grid: { display: false }, ticks: { color: COLORS.text } }
+        },
+        plugins: { legend: { display: false } }
+      }
+    });
+  }
+
+  if (section === 'infomercial') {
+    const drtvEl = document.getElementById('drtvChart');
+    if (drtvEl) {
+      new Chart(drtvEl, {
+        type: 'bar',
+        data: {
+          labels: ['TikTok Paid', 'Instagram Ads', 'Amazon Ads', 'Podcast Ads', 'CTV/DRTV 2-min', 'Full Infomercial', 'National TV'],
+          datasets: [
+            { label: 'Cost to Test ($K)', data: [15, 20, 10, 40, 60, 300, 600], backgroundColor: 'rgba(255,77,109,0.5)', borderColor: COLORS.red, borderWidth: 1, borderRadius: 4 },
+            { label: 'Expected ROAS (x)', data: [6, 5, 4.5, 3.5, 2.5, 1.8, 1.2], backgroundColor: 'rgba(0,229,160,0.5)', borderColor: COLORS.green, borderWidth: 1, borderRadius: 4 }
+          ]
+        },
+        options: { ...chartDefaults,
+          scales: {
+            y: { grid: { color: COLORS.border }, ticks: { color: COLORS.text } },
+            x: { grid: { display: false }, ticks: { color: COLORS.text, font: { size: 11 } } }
+          }
+        }
+      });
+    }
+  }
+
+  if (section === 'roadmap') {
+    new Chart(document.getElementById('channelMixChart'), {
+      type: 'doughnut',
+      data: {
+        labels: ['DTC Shopify/Sub', 'Amazon FBA', 'B2B Gyms/Clinics', 'Premium Retail'],
+        datasets: [{
+          data: [40, 20, 30, 10],
+          backgroundColor: [COLORS.primary, COLORS.orange, COLORS.green, COLORS.gold],
+          borderWidth: 2, borderColor: '#0d1219'
+        }]
+      },
+      options: { ...chartDefaults, cutout: '60%',
+        plugins: { legend: { position: 'bottom', labels: { color: COLORS.text, boxWidth: 12 } } }
+      }
+    });
+  }
+
+  if (section === 'financials') {
+    new Chart(document.getElementById('finForecastChart'), {
+      type: 'bar',
+      data: {
+        labels: ['Y1', 'Y2', 'Y3', 'Y4', 'Y5'],
+        datasets: [
+          { label: 'Revenue ($M)', data: [2, 8, 22, 55, 120], backgroundColor: 'rgba(0,200,224,0.6)', borderRadius: 4 },
+          { label: 'Gross Profit ($M)', data: [1.4, 5.6, 15.4, 38.5, 84], backgroundColor: 'rgba(0,229,160,0.6)', borderRadius: 4 }
+        ]
+      },
+      options: { ...chartDefaults,
+        scales: {
+          y: { grid: { color: COLORS.border }, ticks: { callback: v => '$' + v + 'M', color: COLORS.text } },
+          x: { grid: { display: false }, ticks: { color: COLORS.text } }
+        }
+      }
+    });
+
+    new Chart(document.getElementById('fundChart'), {
+      type: 'doughnut',
+      data: {
+        labels: ['Manufacturing (30%)', 'Marketing & Launch (25%)', 'Inventory & Supply Chain (20%)', 'Operations & Team (15%)', 'Distribution Expansion (10%)'],
+        datasets: [{
+          data: [30, 25, 20, 15, 10],
+          backgroundColor: [COLORS.primary, COLORS.green, COLORS.orange, COLORS.gold, COLORS.purple],
+          borderWidth: 2, borderColor: '#0d1219'
+        }]
+      },
+      options: { ...chartDefaults, cutout: '55%',
+        plugins: { legend: { position: 'bottom', labels: { color: COLORS.text, boxWidth: 10, font: { size: 10 } } } }
+      }
+    });
+  }
+
+  if (section === 'verdict') {
+    new Chart(document.getElementById('priorityChart'), {
+      type: 'bubble',
+      data: {
+        datasets: [
+          { label: 'TikTok/Social', data: [{ x: 95, y: 92, r: 18 }], backgroundColor: 'rgba(0,200,224,0.7)' },
+          { label: 'Micro-Influencers', data: [{ x: 88, y: 85, r: 16 }], backgroundColor: 'rgba(0,229,160,0.7)' },
+          { label: 'DTC Subscription', data: [{ x: 90, y: 90, r: 17 }], backgroundColor: 'rgba(68,136,255,0.7)' },
+          { label: 'B2B Gyms/Clinics', data: [{ x: 85, y: 88, r: 16 }], backgroundColor: 'rgba(255,209,102,0.7)' },
+          { label: 'Amazon FBA', data: [{ x: 80, y: 78, r: 14 }], backgroundColor: 'rgba(255,140,66,0.7)' },
+          { label: 'Podcast Ads', data: [{ x: 72, y: 65, r: 11 }], backgroundColor: 'rgba(167,139,250,0.7)' },
+          { label: 'CTV/DRTV (2-min)', data: [{ x: 60, y: 55, r: 9 }], backgroundColor: 'rgba(255,209,102,0.5)' },
+          { label: 'Whole Foods Pilot', data: [{ x: 65, y: 60, r: 10 }], backgroundColor: 'rgba(0,200,224,0.4)' },
+          { label: 'Print Ads', data: [{ x: 20, y: 15, r: 6 }], backgroundColor: 'rgba(255,77,109,0.5)' },
+          { label: 'Full Infomercial', data: [{ x: 25, y: 20, r: 6 }], backgroundColor: 'rgba(255,77,109,0.5)' },
+          { label: 'Mass Retail (WMT)', data: [{ x: 30, y: 20, r: 7 }], backgroundColor: 'rgba(255,77,109,0.5)' },
+        ]
+      },
+      options: { ...chartDefaults,
+        scales: {
+          x: { title: { display: true, text: 'Revenue Impact Score', color: COLORS.text }, grid: { color: COLORS.border }, ticks: { color: COLORS.text }, min: 0, max: 110 },
+          y: { title: { display: true, text: 'Cost Efficiency Score', color: COLORS.text }, grid: { color: COLORS.border }, ticks: { color: COLORS.text }, min: 0, max: 110 }
+        }
+      }
+    });
+  }
+}
+
+// Render overview charts on load
+setTimeout(() => renderChartsForSection('overview'), 100);
+</script>
+
+</body>
+</html>
